@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kroma CRM</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="/assets/kroma-logo.png" alt="Kroma" class="brand-logo">
+          <div>
+            <strong>Kroma CRM</strong>
+            <span>Street ops system</span>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Navigation principale">
+          <button class="nav-item active" type="button" data-route="dashboard">
+            <span>Dashboard</span>
+            <strong id="navTotal">0</strong>
+          </button>
+          <button class="nav-item" type="button" data-route="pipeline">
+            <span>Pipeline</span>
+            <strong id="navActive">0</strong>
+          </button>
+          <button class="nav-item" type="button" data-route="agenda">
+            <span>Agenda</span>
+            <strong id="navDue">0</strong>
+          </button>
+          <button class="nav-item" type="button" data-route="contacts">
+            <span>Contacts</span>
+            <strong id="navDone">0</strong>
+          </button>
+          <button class="nav-item" type="button" data-route="assistant">
+            <span>Kroma OS</span>
+            <strong>AI</strong>
+          </button>
+          <button class="nav-item" type="button" data-route="brand">
+            <span>DA</span>
+            <strong>FX</strong>
+          </button>
+        </nav>
+
+        <div class="sidebar-status">
+          <span>Semaine active</span>
+          <strong>29 juin - 5 juillet</strong>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="routeKicker">Command center</p>
+            <h1 id="routeTitle">Dashboard</h1>
+          </div>
+          <div class="topbar-actions">
+            <button class="ghost-button" type="button" data-command="agenda">Agenda</button>
+            <button class="primary-button" type="button" id="quickAddBtn">Nouveau suivi</button>
+          </div>
+        </header>
+
+        <section class="command-center" aria-label="Kroma OS">
+          <div class="system-mark" aria-hidden="true"></div>
+          <form class="command-form" id="commandForm">
+            <label for="commandInput">Kroma OS</label>
+            <div class="command-row">
+              <input id="commandInput" autocomplete="off" placeholder="brief, relances, agenda, cherche Vibes, nouveau...">
+              <button class="primary-button" type="submit">Executer</button>
+            </div>
+          </form>
+          <output class="command-output" id="commandOutput">Systeme pret. Priorites chargees.</output>
+        </section>
+
+        <section class="view active" data-view="dashboard">
+          <div class="metric-grid" id="metricGrid"></div>
+          <div class="dashboard-layout">
+            <article class="panel focus-panel" id="focusPanel"></article>
+            <article class="panel next-panel" id="nextPanel"></article>
+            <article class="panel brief-panel" id="briefPanel"></article>
+          </div>
+        </section>
+
+        <section class="view" data-view="pipeline">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Pipeline</p>
+              <h2>Suivis par etape</h2>
+            </div>
+            <button class="primary-button" type="button" id="pipelineAddBtn">Nouveau suivi</button>
+          </div>
+          <div class="pipeline-board" id="pipelineBoard"></div>
+        </section>
+
+        <section class="view" data-view="agenda">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Deadlines</p>
+              <h2>Agenda operationnel</h2>
+            </div>
+            <div class="section-summary" id="agendaSummary">Chargement...</div>
+          </div>
+          <div class="agenda-grid" id="agendaGrid"></div>
+        </section>
+
+        <section class="view" data-view="contacts">
+          <div class="contacts-tools">
+            <label class="search-field">
+              <span>Recherche</span>
+              <input id="searchInput" type="search" placeholder="Scott, Vibes, studio, Anis...">
+            </label>
+            <div class="stage-tabs" id="stageTabs"></div>
+          </div>
+          <div class="contacts-layout">
+            <section class="panel contact-list-panel">
+              <div class="list-header">
+                <div>
+                  <p class="eyebrow">CRM</p>
+                  <h2 id="listTitle">Tous les suivis</h2>
+                </div>
+                <button class="primary-button compact" type="button" id="contactAddBtn">Ajouter</button>
+              </div>
+              <div class="contact-list" id="contactList"></div>
+            </section>
+            <aside class="panel detail-panel" id="detailPanel"></aside>
+          </div>
+        </section>
+
+        <section class="view" data-view="assistant">
+          <div class="assistant-grid">
+            <article class="panel assistant-panel">
+              <p class="eyebrow">Kroma OS</p>
+              <h2>Brief instantane</h2>
+              <div class="assistant-brief" id="assistantBrief"></div>
+              <div class="quick-commands">
+                <button type="button" data-command="brief">Brief</button>
+                <button type="button" data-command="relances">Relances</button>
+                <button type="button" data-command="focus">Focus</button>
+                <button type="button" data-command="agenda">Agenda</button>
+              </div>
+            </article>
+            <article class="panel assistant-panel">
+              <p class="eyebrow">Execution</p>
+              <h2>Next move</h2>
+              <div id="assistantNext"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" data-view="brand">
+          <div class="brand-lab">
+            <article class="panel logo-card">
+              <img src="/assets/kroma-logo.png" alt="Kroma">
+            </article>
+            <article class="panel brand-card">
+              <p class="eyebrow">DA</p>
+              <h2>Kroma x Spiderverse</h2>
+              <div class="palette">
+                <span style="--swatch:#050508">Noir</span>
+                <span style="--swatch:#7a2cff">Violet</span>
+                <span style="--swatch:#ff1744">Rouge</span>
+                <span style="--swatch:#00f7ff">Cyan</span>
+              </div>
+              <div class="visual-rules">
+                <strong>Net, sombre, rapide.</strong>
+                <p>Contours graffiti, lumiere neon, grille urbaine, donnees lisibles.</p>
+              </div>
+            </article>
+            <article class="panel texture-card">
+              <span>GLITCH</span>
+              <span>STREET</span>
+              <span>OPS</span>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="contactDialog">
+      <form method="dialog" class="dialog-card" id="contactForm">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Fiche suivi</p>
+            <h2 id="dialogTitle">Nouveau suivi</h2>
+          </div>
+          <button class="icon-button" type="button" id="closeDialogBtn" aria-label="Fermer">x</button>
+        </div>
+
+        <input type="hidden" id="contactId">
+
+        <div class="form-grid">
+          <label>Sujet<input id="nameInput" required></label>
+          <label>Organisation<input id="companyInput" required></label>
+          <label>Email<input id="emailInput" type="email"></label>
+          <label>Telephone<input id="phoneInput"></label>
+          <label>Etape<select id="stageInput"></select></label>
+          <label>Enjeu estime<input id="valueInput" type="number" min="0" step="50"></label>
+          <label>Prochaine action<input id="nextActionInput"></label>
+          <label>Date de relance<input id="nextActionDateInput" type="date"></label>
+          <label>Responsable<input id="ownerInput"></label>
+          <label>Source<input id="sourceInput"></label>
+          <label>Type de suivi<input id="projectTypeInput"></label>
+          <label>Point sensible<input id="sensitivityInput"></label>
+          <label class="wide-field">Message pret<textarea id="messageDraftInput" rows="5"></textarea></label>
+        </div>
+
+        <div class="dialog-actions">
+          <button class="ghost-button" type="button" id="cancelDialogBtn">Annuler</button>
+          <button class="primary-button" type="submit">Enregistrer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

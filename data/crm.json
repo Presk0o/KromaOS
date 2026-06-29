@@ -1,0 +1,182 @@
+[
+  {
+    "id": "viral-scott",
+    "name": "Scott - validation plan édito",
+    "company": "Client Scott",
+    "email": "",
+    "phone": "",
+    "stage": "en_cours",
+    "value": 2500,
+    "nextAction": "Confirmer la version finale du plan édito avec Adam avant le call.",
+    "nextActionDate": "2026-06-30",
+    "owner": "Mathis",
+    "source": "Récap Viral Media 29/06-05/07",
+    "projectType": "Suivi client",
+    "sensitivity": "Call mardi 30 juin 2026, 10h-11h. Objectif indiqué : validation du plan éditorial et paiement de 2 500 euros.",
+    "messageDraft": "Les gars, pour le call Scott, je veux juste me mettre à jour avant demain.\nAdam, tu peux me confirmer que la dernière version du plan édito est prête ?\nAnis, tu veux qu'on parte sur quel angle au moment de la validation client ?",
+    "notes": [
+      {
+        "id": "note-scott-1",
+        "text": "Point à ne pas laisser dormir : vérifier que le plan édito final est prêt avant le call.",
+        "createdAt": "2026-06-29T09:00:00.000Z"
+      }
+    ],
+    "createdAt": "2026-06-29T09:00:00.000Z",
+    "updatedAt": "2026-06-29T16:07:26.240Z"
+  },
+  {
+    "id": "viral-vibes",
+    "name": "Vibes - plan éditorial",
+    "company": "Vibes",
+    "email": "",
+    "phone": "",
+    "stage": "relancer",
+    "value": 0,
+    "nextAction": "Récupérer la dernière version auprès d'Adam et confirmer ce qui part au client.",
+    "nextActionDate": "2026-06-30",
+    "owner": "Mathis",
+    "source": "Récap Viral Media 29/06-05/07",
+    "projectType": "Suivi client",
+    "sensitivity": "Deadline du plan éditorial mardi 30 juin. Sujet utile pour montrer ta capacité à suivre un client.",
+    "messageDraft": "Point Vibes : je veux juste confirmer où on en est sur le plan édito.\nAdam, tu peux m'envoyer la dernière version ?\nAnis, dis-moi si tu veux que je prenne le relais pour cadrer le retour client si t'es pris.",
+    "notes": [
+      {
+        "id": "note-vibes-1",
+        "text": "Plan édito à finaliser pour mardi 30 juin.",
+        "createdAt": "2026-06-29T09:05:00.000Z"
+      }
+    ],
+    "createdAt": "2026-06-29T09:05:00.000Z",
+    "updatedAt": "2026-06-29T09:05:00.000Z"
+  },
+  {
+    "id": "viral-studio",
+    "name": "Studio Ronnie / Jordan",
+    "company": "Need For School",
+    "email": "",
+    "phone": "",
+    "stage": "relancer",
+    "value": 0,
+    "nextAction": "Envoyer 3-4 créneaux possibles pour ne pas bloquer le shoot.",
+    "nextActionDate": "2026-06-29",
+    "owner": "Mathis",
+    "source": "Récap Viral Media 29/06-05/07",
+    "projectType": "Suivi presta",
+    "sensitivity": "Need For School attend des créneaux précis avant de pouvoir répondre.",
+    "messageDraft": "Bonjour Alana,\nMerci pour votre retour.\nJe peux vous proposer plusieurs créneaux pour le shooting :\n- mardi après-midi\n- mercredi matin ou après-midi\n- jeudi matin\nL'idée serait de réserver le studio sur une demi-journée.\nPouvez-vous me dire ce qui serait possible de votre côté, ainsi que les modalités de réservation/caution ?\nMerci à vous,\nMathis Delassus",
+    "notes": [
+      {
+        "id": "13f9be5f-7101-42d6-b245-fb3b036fa641",
+        "text": "Il faut que Joshua donne ses dispos",
+        "createdAt": "2026-06-29T12:22:19.375Z"
+      },
+      {
+        "id": "note-studio-1",
+        "text": "Sujet à garder vivant : studio Ronnie / validation des disponibilités Jordan.",
+        "createdAt": "2026-06-29T09:10:00.000Z"
+      }
+    ],
+    "createdAt": "2026-06-29T09:10:00.000Z",
+    "updatedAt": "2026-06-29T12:22:19.375Z"
+  },
+  {
+    "id": "viral-montages",
+    "name": "Priorité des montages",
+    "company": "Viral Media / Anis",
+    "email": "",
+    "phone": "",
+    "stage": "clarifier",
+    "value": 0,
+    "nextAction": "Demander à Anis l'ordre de priorité avant d'avancer.",
+    "nextActionDate": "2026-06-29",
+    "owner": "Mathis",
+    "source": "Récap Viral Media 29/06-05/07",
+    "projectType": "Production",
+    "sensitivity": "Trop de contenus à monter sans ordre clair : Barça Ronnie, Afterwork, backstages Vibes/Seth Gueko/Ovnie.",
+    "messageDraft": "Anis, tu veux que je priorise quel montage en premier cette semaine ?\nJ'ai Barça Ronnie, Afterwork et les backstages Vibes/Seth Gueko/Ovnie.\nJe préfère te demander avant d'avancer dans le mauvais ordre.",
+    "notes": [
+      {
+        "id": "note-montages-1",
+        "text": "Éviter d'avancer dans le mauvais sens : obtenir la priorité avant montage.",
+        "createdAt": "2026-06-29T09:15:00.000Z"
+      }
+    ],
+    "createdAt": "2026-06-29T09:15:00.000Z",
+    "updatedAt": "2026-06-29T09:15:00.000Z"
+  },
+  {
+    "id": "viral-fiche-poste",
+    "name": "Fiche de poste signée",
+    "company": "Viral Media / Anis",
+    "email": "",
+    "phone": "",
+    "stage": "clarifier",
+    "value": 0,
+    "nextAction": "Renvoyer la fiche de poste signée quand elle est prête.",
+    "nextActionDate": "2026-07-02",
+    "owner": "Mathis",
+    "source": "Récap Viral Media 29/06-05/07",
+    "projectType": "Admin",
+    "sensitivity": "Simple mais important pour cadrer ton rôle.",
+    "messageDraft": "",
+    "notes": [
+      {
+        "id": "note-fiche-1",
+        "text": "Anis attend la fiche de poste signée.",
+        "createdAt": "2026-06-29T09:20:00.000Z"
+      }
+    ],
+    "createdAt": "2026-06-29T09:20:00.000Z",
+    "updatedAt": "2026-06-29T09:20:00.000Z"
+  },
+  {
+    "id": "viral-0107",
+    "name": "Date 01/07 à confirmer",
+    "company": "Concert / format Imprévu",
+    "email": "",
+    "phone": "",
+    "stage": "fait",
+    "value": 0,
+    "nextAction": "Confirmer l'événement et le vrai jour dans le groupe.",
+    "nextActionDate": "2026-06-29",
+    "owner": "Mathis",
+    "source": "Récap Viral Media 29/06-05/07",
+    "projectType": "Planning tournage",
+    "sensitivity": "Le mail mentionne Mar 01/07, alors que le 1er juillet 2026 tombe un mercredi.",
+    "messageDraft": "Juste pour éviter une erreur de planning : le mail indique \"Mar 01/07\" pour le concert / tournage Imprévu à 19h.\nOn confirme bien la date exacte et le jour ?",
+    "notes": [
+      {
+        "id": "note-0107-1",
+        "text": "Incohérence jour/date à lever avant planning.",
+        "createdAt": "2026-06-29T09:25:00.000Z"
+      }
+    ],
+    "createdAt": "2026-06-29T09:25:00.000Z",
+    "updatedAt": "2026-06-29T12:14:07.178Z"
+  },
+  {
+    "id": "viral-moussa",
+    "name": "Format Qui veut boxer Moussa",
+    "company": "Moussa / Viral Media",
+    "email": "",
+    "phone": "",
+    "stage": "en_cours",
+    "value": 0,
+    "nextAction": "Suivre la validation du partenariat avant de caler le format.",
+    "nextActionDate": "2026-07-03",
+    "owner": "Mathis",
+    "source": "Récap Viral Media 29/06-05/07",
+    "projectType": "Suivi talents",
+    "sensitivity": "Sujet dépendant de la validation du partenariat.",
+    "messageDraft": "",
+    "notes": [
+      {
+        "id": "note-moussa-1",
+        "text": "Garder le sujet vivant sans forcer : dépend de la validation partenariat.",
+        "createdAt": "2026-06-29T09:30:00.000Z"
+      }
+    ],
+    "createdAt": "2026-06-29T09:30:00.000Z",
+    "updatedAt": "2026-06-29T09:30:00.000Z"
+  }
+]

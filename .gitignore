@@ -1,0 +1,10 @@
+.agents/
+outputs/
+work/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.*
+data/viral-media-mail-automation-state.json

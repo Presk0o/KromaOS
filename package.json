@@ -1,0 +1,12 @@
+{
+  "name": "mini-crm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mini CRM local avec serveur Node et stockage JSON.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
