@@ -1,0 +1,86 @@
+{
+  "contacts": [
+    {
+      "id": "demo-street-launch",
+      "name": "Lancement street campaign",
+      "company": "Kroma Demo",
+      "email": "",
+      "phone": "",
+      "stage": "en_cours",
+      "value": 2500,
+      "nextAction": "Valider le plan de diffusion et les formats prioritaires.",
+      "nextActionDate": "2026-06-30",
+      "owner": "Mathis",
+      "source": "Demo GitHub Pages",
+      "projectType": "Street marketing",
+      "sensitivity": "Priorite haute : garder une execution simple, visible, mesurable.",
+      "messageDraft": "Je te propose qu'on valide aujourd'hui les 3 formats prioritaires, puis je verrouille le planning de diffusion.",
+      "notes": [
+        {
+          "id": "demo-note-1",
+          "text": "Objectif : transformer l'energie DA en actions claires.",
+          "createdAt": "2026-06-29T09:00:00.000Z"
+        }
+      ],
+      "createdAt": "2026-06-29T09:00:00.000Z",
+      "updatedAt": "2026-06-29T09:00:00.000Z"
+    },
+    {
+      "id": "demo-brand-pack",
+      "name": "Pack DA Kroma",
+      "company": "Prospect createur",
+      "email": "",
+      "phone": "",
+      "stage": "relancer",
+      "value": 1200,
+      "nextAction": "Envoyer une proposition courte avec 2 options de budget.",
+      "nextActionDate": "2026-07-01",
+      "owner": "Mathis",
+      "source": "Demo GitHub Pages",
+      "projectType": "Branding",
+      "sensitivity": "Ne pas surcharger : offre lisible, impact direct.",
+      "messageDraft": "Je t'envoie deux options : une version essentielle pour cadrer la DA, et une version complete avec declinaisons social media.",
+      "notes": [],
+      "createdAt": "2026-06-29T10:00:00.000Z",
+      "updatedAt": "2026-06-29T10:00:00.000Z"
+    },
+    {
+      "id": "demo-content-system",
+      "name": "Systeme contenus reels",
+      "company": "Studio local",
+      "email": "",
+      "phone": "",
+      "stage": "clarifier",
+      "value": 900,
+      "nextAction": "Clarifier les deadlines et le nombre de livrables par semaine.",
+      "nextActionDate": "2026-07-02",
+      "owner": "Mathis",
+      "source": "Demo GitHub Pages",
+      "projectType": "Production",
+      "sensitivity": "Le besoin est flou : cadrage avant devis.",
+      "messageDraft": "Avant de te chiffrer ca proprement, il me faut le rythme attendu et les formats exacts a produire.",
+      "notes": [],
+      "createdAt": "2026-06-29T11:00:00.000Z",
+      "updatedAt": "2026-06-29T11:00:00.000Z"
+    },
+    {
+      "id": "demo-case-study",
+      "name": "Cas client a publier",
+      "company": "Kroma interne",
+      "email": "",
+      "phone": "",
+      "stage": "fait",
+      "value": 0,
+      "nextAction": "Preparer la publication finale.",
+      "nextActionDate": "2026-07-04",
+      "owner": "Mathis",
+      "source": "Demo GitHub Pages",
+      "projectType": "Contenu",
+      "sensitivity": "Utiliser ce sujet comme preuve sociale.",
+      "messageDraft": "Le cas est pret. Je le mets en forme et je le programme sur les canaux prioritaires.",
+      "notes": [],
+      "createdAt": "2026-06-29T12:00:00.000Z",
+      "updatedAt": "2026-06-29T12:00:00.000Z"
+    }
+  ]
+}

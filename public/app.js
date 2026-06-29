@@ -185,14 +185,131 @@ function contactLine(contact) {
   return `${contact.name} - ${due.label} - ${contact.nextAction || "Action a definir"}`;
 }
 
-async function api(path, options = {}) {
-  const response = await fetch(path, {
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-    ...options
-  });
+const staticStorageKey = "kroma-crm-static-contacts-v1";
+
+function getBody(options = {}) {
+  if (!options.body) return {};
+  try {
+    return JSON.parse(options.body);
+  } catch {
+    return {};
+  }
+}
+
+function makeId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `contact-${Date.now()}-${Math.round(Math.random() * 100000)}`;
+}
+
+function sanitizeStaticContact(input, existing = {}) {
+  const now = new Date().toISOString();
+  const name = String(input.name || existing.name || "").trim();
+  if (!name) throw new Error("Le nom est obligatoire.");
+
+  const stage = stageOrder.includes(input.stage) ? input.stage : existing.stage || "clarifier";
+  return {
+    id: existing.id || makeId(),
+    name,
+    company: String(input.company ?? existing.company ?? "").trim(),
+    email: String(input.email ?? existing.email ?? "").trim(),
+    phone: String(input.phone ?? existing.phone ?? "").trim(),
+    stage,
+    value: Number(input.value ?? existing.value ?? 0) || 0,
+    nextAction: String(input.nextAction ?? existing.nextAction ?? "").trim(),
+    nextActionDate: String(input.nextActionDate ?? existing.nextActionDate ?? "").trim(),
+    owner: String(input.owner ?? existing.owner ?? "Kroma").trim(),
+    source: String(input.source ?? existing.source ?? "Demo GitHub Pages").trim(),
+    projectType: String(input.projectType ?? existing.projectType ?? "").trim(),
+    sensitivity: String(input.sensitivity ?? existing.sensitivity ?? "").trim(),
+    messageDraft: String(input.messageDraft ?? existing.messageDraft ?? "").trim(),
+    notes: Array.isArray(existing.notes) ? existing.notes : [],
+    createdAt: existing.createdAt || now,
+    updatedAt: now
+  };
+}
+
+async function readStaticContacts() {
+  const saved = localStorage.getItem(staticStorageKey);
+  if (saved) return JSON.parse(saved);
+
+  const response = await fetch("data/contacts.json", { cache: "no-store" });
   const payload = await response.json();
-  if (!response.ok) throw new Error(payload.error || "Erreur CRM.");
-  return payload;
+  const contacts = Array.isArray(payload.contacts) ? payload.contacts : payload;
+  localStorage.setItem(staticStorageKey, JSON.stringify(contacts));
+  return contacts;
+}
+
+function writeStaticContacts(contacts) {
+  localStorage.setItem(staticStorageKey, JSON.stringify(contacts));
+}
+
+async function staticApi(path, options = {}) {
+  const method = String(options.method || "GET").toUpperCase();
+  const contacts = await readStaticContacts();
+  const contactMatch = path.match(/^\/api\/contacts\/([^/]+)$/);
+  const notesMatch = path.match(/^\/api\/contacts\/([^/]+)\/notes$/);
+
+  if (method === "GET" && path === "/api/contacts") {
+    return { contacts: rankedContacts(contacts), stages: stageOrder, mode: "static" };
+  }
+
+  if (method === "POST" && path === "/api/contacts") {
+    const contact = sanitizeStaticContact(getBody(options));
+    contacts.push(contact);
+    writeStaticContacts(contacts);
+    return { contact };
+  }
+
+  if (contactMatch && method === "PUT") {
+    const id = decodeURIComponent(contactMatch[1]);
+    const index = contacts.findIndex((contact) => contact.id === id);
+    if (index === -1) throw new Error("Contact introuvable.");
+    contacts[index] = sanitizeStaticContact(getBody(options), contacts[index]);
+    writeStaticContacts(contacts);
+    return { contact: contacts[index] };
+  }
+
+  if (contactMatch && method === "DELETE") {
+    const id = decodeURIComponent(contactMatch[1]);
+    const nextContacts = contacts.filter((contact) => contact.id !== id);
+    if (nextContacts.length === contacts.length) throw new Error("Contact introuvable.");
+    writeStaticContacts(nextContacts);
+    return { ok: true };
+  }
+
+  if (notesMatch && method === "POST") {
+    const id = decodeURIComponent(notesMatch[1]);
+    const index = contacts.findIndex((contact) => contact.id === id);
+    if (index === -1) throw new Error("Contact introuvable.");
+    const text = String(getBody(options).text || "").trim();
+    if (!text) throw new Error("La note est vide.");
+    const note = { id: makeId(), text, createdAt: new Date().toISOString() };
+    contacts[index].notes = [...(contacts[index].notes || []), note];
+    contacts[index].updatedAt = new Date().toISOString();
+    writeStaticContacts(contacts);
+    return { note, contact: contacts[index] };
+  }
+
+  throw new Error("Action CRM indisponible.");
+}
+
+async function api(path, options = {}) {
+  try {
+    const response = await fetch(path, {
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      ...options
+    });
+    const isJson = response.headers.get("content-type")?.includes("application/json");
+    if (!isJson && path.startsWith("/api/contacts")) return staticApi(path, options);
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || "Erreur CRM.");
+    return payload;
+  } catch (error) {
+    if (path.startsWith("/api/contacts") && (error.name === "TypeError" || error instanceof SyntaxError)) {
+      return staticApi(path, options);
+    }
+    throw error;
+  }
 }
 
 async function loadContacts() {
