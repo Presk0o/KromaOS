@@ -1,6 +1,6 @@
-# Viral CRM
+# KromaOS CRM
 
-Mini CRM local adapte au recap Viral Media de Mathis pour la semaine du 29 juin au 5 juillet 2026.
+Mini CRM local pour piloter les missions Kroma, les relances, les deadlines et les imports mail.
 Il tourne avec un serveur Node, une interface web et un stockage dans `data/crm.json`.
 
 ## Lancer
@@ -25,14 +25,16 @@ http://localhost:3000
 
 ## Fonctionnalites
 
-- Suivis issus du PDF : Scott, Vibes, studio Ronnie/Jordan, montages, fiche de poste, date 01/07, Moussa.
+- Suivis clients, tournages, montages, deadlines et relances.
 - Pipeline : a clarifier, a relancer, en cours, bloque, fait.
 - Recherche et filtres par relances ou suivis faits.
 - Indicateurs : enjeu suivi, relances semaine, avancement, sujets actifs.
 - Ajout, modification et suppression de suivis.
 - Messages de relance prets a copier.
 - Notes horodatees par suivi.
-- Donnees persistantes dans `data/crm.json`.
+- Donnees persistantes en local dans `data/crm.json`.
+- Base mail optionnelle via `data/viral-mail-db.json`.
+- Profil utilisateur personnalisable via `data/user-session.json`.
 
 ## GitHub Pages
 
@@ -43,4 +45,4 @@ Important : GitHub Pages ne lance pas le serveur Node. En ligne, le CRM passe do
 
 - donnees publiques de demo dans `public/data/contacts.json` ;
 - ajouts/modifications sauvegardes dans le navigateur du visiteur ;
-- vraies donnees locales conservees dans `data/crm.json`, non exposees par Pages.
+- vraies donnees locales conservees dans `data/*.json`, non exposees par Pages.

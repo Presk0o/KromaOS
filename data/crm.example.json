@@ -1,0 +1,40 @@
+[
+  {
+    "id": "demo-street-launch",
+    "name": "Lancement street campaign",
+    "company": "Kroma Demo",
+    "email": "",
+    "phone": "",
+    "stage": "en_cours",
+    "value": 2500,
+    "nextAction": "Valider le plan de diffusion et les formats prioritaires.",
+    "nextActionDate": "2026-06-30",
+    "owner": "Mathis",
+    "source": "Demo GitHub",
+    "projectType": "Street marketing",
+    "sensitivity": "Priorite haute : garder une execution simple, visible, mesurable.",
+    "messageDraft": "Je te propose qu'on valide aujourd'hui les formats prioritaires, puis je verrouille le planning de diffusion.",
+    "notes": [],
+    "createdAt": "2026-06-29T09:00:00.000Z",
+    "updatedAt": "2026-06-29T09:00:00.000Z"
+  },
+  {
+    "id": "demo-shoot-plan",
+    "name": "Tournage capsule brand",
+    "company": "Studio Demo",
+    "email": "",
+    "phone": "",
+    "stage": "relancer",
+    "value": 900,
+    "nextAction": "Confirmer le lieu, les participants et la checklist matos.",
+    "nextActionDate": "2026-07-02",
+    "owner": "Mathis",
+    "source": "Demo GitHub",
+    "projectType": "Tournage",
+    "sensitivity": "Cadrer le deroule avant de bloquer l'equipe.",
+    "messageDraft": "Je veux verrouiller le lieu, les horaires et la checklist avant le tournage.",
+    "notes": [],
+    "createdAt": "2026-06-29T10:00:00.000Z",
+    "updatedAt": "2026-06-29T10:00:00.000Z"
+  }
+]

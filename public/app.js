@@ -1,27 +1,32 @@
 const stageLabels = {
-  clarifier: "A clarifier",
-  relancer: "A relancer",
-  en_cours: "En cours",
-  bloque: "Bloque",
-  fait: "Fait"
+  clarifier: "A décoder",
+  relancer: "Signal chaud",
+  en_cours: "En action",
+  bloque: "Blocage",
+  fait: "Bouclé"
 };
 
 const stageOrder = ["clarifier", "relancer", "en_cours", "bloque", "fait"];
 
 const routeMeta = {
-  dashboard: ["Command center", "Dashboard"],
-  pipeline: ["Pipeline", "Suivis par etape"],
-  agenda: ["Deadlines", "Agenda"],
-  contacts: ["CRM", "Contacts"],
-  assistant: ["Kroma OS", "Assistant"],
-  brand: ["Direction artistique", "DA Kroma"]
+  dashboard: ["HQ multivers", "Radar Kroma"],
+  pipeline: ["Missions", "Board street"],
+  agenda: ["Tempo", "Agenda des impacts"],
+  contacts: ["Dossiers", "Deck missions"],
+  database: ["Automation mail", "Base missions"],
+  assistant: ["Jarvis layer", "Agent tactique"],
+  brand: ["Direction artistique", "Street-Verse"],
+  profile: ["Session utilisateur", "Profil"]
 };
 
 const routeAliases = {
   crm: "contacts",
+  base: "database",
+  mail: "database",
   kroma: "assistant",
   os: "assistant",
-  da: "brand"
+  da: "brand",
+  profil: "profile"
 };
 
 function normalizeRoute(route) {
@@ -32,6 +37,8 @@ function normalizeRoute(route) {
 
 const state = {
   contacts: [],
+  mailDb: null,
+  session: null,
   stages: stageOrder,
   route: normalizeRoute(location.hash.slice(1)),
   selectedId: null,
@@ -50,6 +57,12 @@ const els = {
   navActive: document.querySelector("#navActive"),
   navDue: document.querySelector("#navDue"),
   navDone: document.querySelector("#navDone"),
+  navMail: document.querySelector("#navMail"),
+  navProfile: document.querySelector("#navProfile"),
+  brandName: document.querySelector("#brandName"),
+  brandTagline: document.querySelector("#brandTagline"),
+  weekLabel: document.querySelector("#weekLabel"),
+  commandLabel: document.querySelector("#commandLabel"),
   metricGrid: document.querySelector("#metricGrid"),
   focusPanel: document.querySelector("#focusPanel"),
   nextPanel: document.querySelector("#nextPanel"),
@@ -67,6 +80,33 @@ const els = {
   commandOutput: document.querySelector("#commandOutput"),
   assistantBrief: document.querySelector("#assistantBrief"),
   assistantNext: document.querySelector("#assistantNext"),
+  mailDbSummary: document.querySelector("#mailDbSummary"),
+  mailDbImports: document.querySelector("#mailDbImports"),
+  mailDbShoots: document.querySelector("#mailDbShoots"),
+  mailDbTasks: document.querySelector("#mailDbTasks"),
+  profilePreview: document.querySelector("#profilePreview"),
+  profileForm: document.querySelector("#profileForm"),
+  profileNameInput: document.querySelector("#profileNameInput"),
+  profileHandleInput: document.querySelector("#profileHandleInput"),
+  profileRoleInput: document.querySelector("#profileRoleInput"),
+  profileEmailInput: document.querySelector("#profileEmailInput"),
+  profileAvatarInput: document.querySelector("#profileAvatarInput"),
+  profilePhotoInput: document.querySelector("#profilePhotoInput"),
+  profileBioInput: document.querySelector("#profileBioInput"),
+  workspaceNameInput: document.querySelector("#workspaceNameInput"),
+  workspaceTaglineInput: document.querySelector("#workspaceTaglineInput"),
+  workspaceWeekInput: document.querySelector("#workspaceWeekInput"),
+  defaultOwnerInput: document.querySelector("#defaultOwnerInput"),
+  startRouteInput: document.querySelector("#startRouteInput"),
+  densityInput: document.querySelector("#densityInput"),
+  motionInput: document.querySelector("#motionInput"),
+  visualIntensityInput: document.querySelector("#visualIntensityInput"),
+  accentColorInput: document.querySelector("#accentColorInput"),
+  hotColorInput: document.querySelector("#hotColorInput"),
+  cyanColorInput: document.querySelector("#cyanColorInput"),
+  magentaColorInput: document.querySelector("#magentaColorInput"),
+  jarvisDefaultOpenInput: document.querySelector("#jarvisDefaultOpenInput"),
+  profileResetBtn: document.querySelector("#profileResetBtn"),
   quickAddBtn: document.querySelector("#quickAddBtn"),
   pipelineAddBtn: document.querySelector("#pipelineAddBtn"),
   contactAddBtn: document.querySelector("#contactAddBtn"),
@@ -124,13 +164,13 @@ const agendaDays = Array.from({ length: 7 }, (_, index) => {
 });
 
 const mindset = {
-  "2026-06-29": "Clarifier avant d'accelerer.",
-  "2026-06-30": "Un call prepare vaut deux relances.",
-  "2026-07-01": "Verifier date, lieu, responsable.",
-  "2026-07-02": "Fermer les petits sujets libere le mental.",
-  "2026-07-03": "Avancer vite, relancer propre.",
-  "2026-07-04": "Rendre le travail visible.",
-  "2026-07-05": "Review, preuve, prochain levier."
+  "2026-06-29": "Décoder le signal avant de foncer.",
+  "2026-06-30": "Un call verrouillé vaut deux relances.",
+  "2026-07-01": "Date, lieu, pilote : pas de flou dans le multivers.",
+  "2026-07-02": "Fermer les mini-failles libère la tête.",
+  "2026-07-03": "Vitesse oui, brouillon non.",
+  "2026-07-04": "Rendre le travail visible, sinon il n'existe pas.",
+  "2026-07-05": "Review, preuve, prochain move."
 };
 
 function isoDate(date) {
@@ -192,14 +232,64 @@ function weekContacts() {
 
 function contactLine(contact) {
   const due = dueMeta(contact);
-  return `${contact.name} - ${due.label} - ${contact.nextAction || "Action a definir"}`;
+  return `${contact.name} - ${due.label} - ${contact.nextAction || "Next move à poser"}`;
 }
 
 function normalizeCommand(value) {
   return String(value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+function defaultSession() {
+  return {
+    version: 1,
+    updatedAt: null,
+    profile: {
+      name: "Mathis",
+      handle: "Kroma",
+      role: "Chef de projet créatif",
+      email: "",
+      avatarText: "MD",
+      avatarImage: "",
+      bio: "Piloter Kroma, garder les deadlines propres, transformer les mails en missions actionnables."
+    },
+    workspace: {
+      name: "Kroma HQ",
+      tagline: "Street-Verse ops",
+      weekLabel: "29 juin - 5 juillet",
+      commandLabel: "Console Jarvis"
+    },
+    preferences: {
+      accentColor: "#7a2cff",
+      hotColor: "#ff1744",
+      cyanColor: "#00f7ff",
+      magentaColor: "#ff2bd6",
+      density: "comfortable",
+      motion: "on",
+      visualIntensity: 82,
+      defaultOwner: "Mathis",
+      startRoute: "dashboard",
+      jarvisDefaultOpen: false
+    }
+  };
+}
+
+function emptyMailDatabase() {
+  return {
+    version: 1,
+    updatedAt: null,
+    source: "Gmail missions",
+    watchQuery: "from:sender@example.com",
+    processedMessageIds: [],
+    imports: [],
+    tasks: [],
+    shoots: [],
+    weeklyRecaps: []
+  };
+}
+
 const staticStorageKey = "kroma-crm-static-contacts-v1";
+const staticSessionStorageKey = "kroma-crm-session-v1";
+const staticMailDbStorageKey = "kroma-crm-mail-db-v1";
 
 function getBody(options = {}) {
   if (!options.body) return {};
@@ -286,7 +376,7 @@ async function staticApi(path, options = {}) {
   if (contactMatch && method === "DELETE") {
     const id = decodeURIComponent(contactMatch[1]);
     const nextContacts = contacts.filter((contact) => contact.id !== id);
-    if (nextContacts.length === contacts.length) throw new Error("Contact introuvable.");
+    if (nextContacts.length === contacts.length) throw new Error("Dossier introuvable.");
     writeStaticContacts(nextContacts);
     return { ok: true };
   }
@@ -304,7 +394,34 @@ async function staticApi(path, options = {}) {
     return { note, contact: contacts[index] };
   }
 
-  throw new Error("Action CRM indisponible.");
+  throw new Error("Action hors radar.");
+}
+
+function readStaticSession() {
+  const saved = localStorage.getItem(staticSessionStorageKey);
+  return saved ? JSON.parse(saved) : defaultSession();
+}
+
+function writeStaticSession(session) {
+  localStorage.setItem(staticSessionStorageKey, JSON.stringify(session));
+}
+
+function readStaticMailDb() {
+  const saved = localStorage.getItem(staticMailDbStorageKey);
+  return saved ? JSON.parse(saved) : emptyMailDatabase();
+}
+
+async function staticFallback(path, options = {}) {
+  const method = String(options.method || "GET").toUpperCase();
+  if (path.startsWith("/api/contacts")) return staticApi(path, options);
+  if (method === "GET" && path === "/api/session") return { session: readStaticSession() };
+  if (method === "PUT" && path === "/api/session") {
+    const session = { ...readStaticSession(), ...getBody(options), updatedAt: new Date().toISOString() };
+    writeStaticSession(session);
+    return { session };
+  }
+  if (method === "GET" && path === "/api/mail-database") return readStaticMailDb();
+  throw new Error("Action hors radar.");
 }
 
 async function api(path, options = {}) {
@@ -314,25 +431,58 @@ async function api(path, options = {}) {
       ...options
     });
     const isJson = response.headers.get("content-type")?.includes("application/json");
-    if (!isJson && path.startsWith("/api/contacts")) return staticApi(path, options);
+    if (!isJson && path.startsWith("/api/")) return staticFallback(path, options);
     const payload = await response.json();
-    if (!response.ok) throw new Error(payload.error || "Erreur CRM.");
+    if (!response.ok) throw new Error(payload.error || "Erreur radar.");
     return payload;
   } catch (error) {
-    if (path.startsWith("/api/contacts") && (error.name === "TypeError" || error instanceof SyntaxError)) {
-      return staticApi(path, options);
+    if (path.startsWith("/api/") && (error.name === "TypeError" || error instanceof SyntaxError)) {
+      return staticFallback(path, options);
     }
     throw error;
   }
 }
 
 async function loadContacts() {
-  const payload = await api("/api/contacts");
+  const [payload, mailDb, sessionPayload] = await Promise.all([
+    api("/api/contacts"),
+    api("/api/mail-database").catch(() => emptyMailDatabase()),
+    api("/api/session").catch(() => ({ session: defaultSession() }))
+  ]);
   state.contacts = payload.contacts;
+  state.mailDb = mailDb;
+  state.session = sessionPayload.session || defaultSession();
   state.stages = payload.stages || stageOrder;
   if (!state.selectedId && state.contacts.length) state.selectedId = rankedContacts()[0].id;
+  applySession();
   initJarvis();
   render();
+}
+
+function applySession() {
+  const session = state.session || defaultSession();
+  const preferences = session.preferences || defaultSession().preferences;
+  const root = document.documentElement;
+  root.style.setProperty("--violet", preferences.accentColor || "#7a2cff");
+  root.style.setProperty("--red", preferences.hotColor || "#ff1744");
+  root.style.setProperty("--cyan", preferences.cyanColor || "#00f7ff");
+  root.style.setProperty("--magenta", preferences.magentaColor || "#ff2bd6");
+  root.style.setProperty("--visual-alpha", String((Number(preferences.visualIntensity || 82) / 100).toFixed(2)));
+  document.body.dataset.density = preferences.density || "comfortable";
+  document.body.dataset.motion = preferences.motion || "on";
+
+  if (els.brandName) els.brandName.textContent = session.workspace?.name || "Kroma HQ";
+  if (els.brandTagline) els.brandTagline.textContent = session.workspace?.tagline || "Street-Verse ops";
+  if (els.weekLabel) els.weekLabel.textContent = session.workspace?.weekLabel || "29 juin - 5 juillet";
+  if (els.commandLabel) els.commandLabel.textContent = session.workspace?.commandLabel || "Console Jarvis";
+  if (els.navProfile) els.navProfile.textContent = session.profile?.avatarText || "MD";
+
+  if (!location.hash && preferences.startRoute && routeMeta[preferences.startRoute]) {
+    state.route = preferences.startRoute;
+  }
+  if (preferences.jarvisDefaultOpen && !state.agentMessages.length) {
+    state.agentOpen = true;
+  }
 }
 
 function setRoute(route, options = {}) {
@@ -361,12 +511,14 @@ function renderMetrics() {
   els.navActive.textContent = active.length;
   els.navDue.textContent = due.length;
   els.navDone.textContent = done.length;
+  if (els.navMail) els.navMail.textContent = state.mailDb?.imports?.length || 0;
+  if (els.navProfile) els.navProfile.textContent = state.session?.profile?.avatarText || "MD";
 
   const metrics = [
-    ["Pipeline actif", currency.format(pipeline), `${active.length} sujets ouverts`],
-    ["Relances", due.length, "Aujourd'hui + 7 jours"],
-    ["Conversion", `${win}%`, `${done.length} termines`],
-    ["Semaine", weekContacts().length, "deadlines actives"]
+    ["Impact ouvert", currency.format(pipeline), `${active.length} missions vivantes`],
+    ["Signaux chauds", due.length, "Aujourd'hui + 7 jours"],
+    ["Bouclées", `${win}%`, `${done.length} missions verrouillées`],
+    ["Arc semaine", weekContacts().length, "impacts au tempo"]
   ];
   els.metricGrid.innerHTML = metrics
     .map(([label, value, detail]) => `
@@ -393,7 +545,7 @@ function renderDashboard() {
   els.focusPanel.innerHTML = `
     <div class="panel-header">
       <div>
-        <p class="eyebrow">Focus</p>
+        <p class="eyebrow">Radar</p>
         <h2>Prochain move</h2>
       </div>
       ${next ? `<span class="due-pill ${dueMeta(next).tone}">${escapeHtml(dueMeta(next).label)}</span>` : ""}
@@ -402,19 +554,19 @@ function renderDashboard() {
       next
         ? `<button class="focus-item" type="button" data-contact="${escapeHtml(next.id)}">
             <strong>${escapeHtml(next.name)}</strong>
-            <span>${escapeHtml(next.nextAction || "Action a definir")}</span>
+            <span>${escapeHtml(next.nextAction || "Next move à poser")}</span>
           </button>`
-        : `<div class="empty-state">Aucun sujet actif.</div>`
+        : `<div class="empty-state">Aucune mission active.</div>`
     }
   `;
 
   els.nextPanel.innerHTML = `
     <div class="panel-header">
       <div>
-        <p class="eyebrow">Urgent</p>
-        <h2>Relances</h2>
+        <p class="eyebrow">Signaux</p>
+        <h2>Chaud devant</h2>
       </div>
-      <button class="ghost-button compact" type="button" data-route-target="contacts">Voir CRM</button>
+      <button class="ghost-button compact" type="button" data-route-target="contacts">Voir dossiers</button>
     </div>
     <div class="mini-list">
       ${
@@ -423,7 +575,7 @@ function renderDashboard() {
             <strong>${escapeHtml(contact.name)}</strong>
             <span>${escapeHtml(contactLine(contact))}</span>
           </button>
-        `).join("") || `<div class="empty-state">Aucune relance proche.</div>`
+        `).join("") || `<div class="empty-state">Aucun signal chaud.</div>`
       }
     </div>
   `;
@@ -431,19 +583,19 @@ function renderDashboard() {
   els.briefPanel.innerHTML = `
     <div class="panel-header">
       <div>
-        <p class="eyebrow">Brief</p>
-        <h2>Semaine Viral Media</h2>
+        <p class="eyebrow">Scan</p>
+        <h2>Semaine missions</h2>
       </div>
-      <button class="ghost-button compact" type="button" data-route-target="agenda">Agenda</button>
+      <button class="ghost-button compact" type="button" data-route-target="agenda">Tempo</button>
     </div>
     <div class="mini-list">
       ${
         week.slice(0, 5).map((contact) => `
           <button class="mini-item" type="button" data-contact="${escapeHtml(contact.id)}">
             <strong>${escapeHtml(contact.name)}</strong>
-            <span>${escapeHtml(contact.nextAction || "Action a definir")}</span>
+            <span>${escapeHtml(contact.nextAction || "Next move à poser")}</span>
           </button>
-        `).join("") || `<div class="empty-state">Aucune deadline cette semaine.</div>`
+        `).join("") || `<div class="empty-state">Aucun impact au tempo.</div>`
       }
     </div>
   `;
@@ -463,10 +615,10 @@ function renderPipeline() {
             contacts.map((contact) => `
               <button class="pipeline-card" type="button" data-contact="${escapeHtml(contact.id)}">
                 <strong>${escapeHtml(contact.name)}</strong>
-                <small>${escapeHtml(contact.nextAction || contact.sensitivity || "Aucune action")}</small>
+                <small>${escapeHtml(contact.nextAction || contact.sensitivity || "Aucun next move")}</small>
                 <span class="due-pill ${dueMeta(contact).tone}">${escapeHtml(dueMeta(contact).label)}</span>
               </button>
-            `).join("") || `<p class="agenda-empty">Vide</p>`
+            `).join("") || `<p class="agenda-empty">Zone clean</p>`
           }
         </div>
       </section>
@@ -479,7 +631,7 @@ function renderAgenda() {
   today.setHours(0, 0, 0, 0);
   const week = weekContacts();
   const urgent = dueContacts().filter((contact) => dueMeta(contact).tone === "urgent").length;
-  els.agendaSummary.textContent = `${week.length} deadlines cette semaine - ${urgent} urgentes`;
+  els.agendaSummary.textContent = `${week.length} impacts cette semaine - ${urgent} alertes rouges`;
 
   els.agendaGrid.innerHTML = agendaDays.map((day) => {
     const dayIso = isoDate(day);
@@ -496,9 +648,9 @@ function renderAgenda() {
             contacts.map((contact) => `
               <button class="mini-item" type="button" data-contact="${escapeHtml(contact.id)}">
                 <strong>${escapeHtml(contact.name)}</strong>
-                <span>${escapeHtml(contact.nextAction || "Action a definir")}</span>
+                <span>${escapeHtml(contact.nextAction || "Next move à poser")}</span>
               </button>
-            `).join("") || `<p class="agenda-empty">Libre</p>`
+            `).join("") || `<p class="agenda-empty">Respire</p>`
           }
         </div>
         <div class="mindset">${escapeHtml(mindset[dayIso] || "")}</div>
@@ -528,14 +680,14 @@ function filteredContacts() {
 }
 
 function renderStageTabs() {
-  const tabs = [{ value: "all", label: "Tous" }, ...state.stages.map((stage) => ({ value: stage, label: stageLabels[stage] || stage }))];
+  const tabs = [{ value: "all", label: "Tout le verse" }, ...state.stages.map((stage) => ({ value: stage, label: stageLabels[stage] || stage }))];
   els.stageTabs.innerHTML = tabs.map((tab) => `
     <button class="stage-tab ${state.stageFilter === tab.value ? "active" : ""}" type="button" data-stage="${escapeHtml(tab.value)}">
       ${escapeHtml(tab.label)}
     </button>
   `).join("");
   const current = tabs.find((tab) => tab.value === state.stageFilter);
-  els.listTitle.textContent = current?.label || "Tous les suivis";
+  els.listTitle.textContent = current?.label || "Tous les dossiers";
 }
 
 function renderContactList() {
@@ -545,20 +697,20 @@ function renderContactList() {
       <span>
         <strong>${escapeHtml(contact.name)}</strong>
         <small>${escapeHtml(contact.company)}</small>
-        <small>${escapeHtml(contact.nextAction || contact.sensitivity || "Aucune action")}</small>
+        <small>${escapeHtml(contact.nextAction || contact.sensitivity || "Aucun next move")}</small>
       </span>
       <span class="contact-card-meta">
         <span class="badge ${escapeHtml(contact.stage)}">${escapeHtml(stageLabels[contact.stage] || contact.stage)}</span>
         <span class="due-pill ${dueMeta(contact).tone}">${escapeHtml(dueMeta(contact).label)}</span>
       </span>
     </button>
-  `).join("") || `<div class="empty-state">Aucun suivi trouve.</div>`;
+  `).join("") || `<div class="empty-state">Aucun dossier dans ce secteur.</div>`;
 }
 
 function renderDetail() {
   const contact = state.contacts.find((item) => item.id === state.selectedId);
   if (!contact) {
-    els.detailPanel.innerHTML = `<div class="empty-state">Selectionne un suivi.</div>`;
+    els.detailPanel.innerHTML = `<div class="empty-state">Sélectionne un dossier.</div>`;
     return;
   }
   const due = dueMeta(contact);
@@ -576,28 +728,28 @@ function renderDetail() {
       <h2>${escapeHtml(contact.name)}</h2>
       <p>${escapeHtml(contact.company)}</p>
       <div class="detail-actions">
-        <button class="ghost-button compact" type="button" data-action="edit">Modifier</button>
-        <button class="danger-button compact" type="button" data-action="delete">Supprimer</button>
+        <button class="ghost-button compact" type="button" data-action="edit">Retoucher</button>
+        <button class="danger-button compact" type="button" data-action="delete">Effacer</button>
       </div>
     </div>
     <div class="detail-body">
       <div class="info-tile wide">
-        <span>Prochaine action</span>
-        <strong>${escapeHtml(contact.nextAction || "Action a definir")}</strong>
+        <span>Next move</span>
+        <strong>${escapeHtml(contact.nextAction || "Next move à poser")}</strong>
       </div>
       <div class="detail-grid">
-        <div class="info-tile"><span>Relance</span><strong>${escapeHtml(due.label)}</strong></div>
-        <div class="info-tile"><span>Enjeu</span><strong>${currency.format(contact.value || 0)}</strong></div>
-        <div class="info-tile"><span>Responsable</span><strong>${escapeHtml(contact.owner || "Mathis")}</strong></div>
-        <div class="info-tile"><span>Type</span><strong>${escapeHtml(contact.projectType || "Suivi")}</strong></div>
-        <div class="info-tile wide"><span>Point sensible</span><strong>${escapeHtml(contact.sensitivity || "Aucun point sensible")}</strong></div>
-        <div class="info-tile wide"><span>Source</span><strong>${escapeHtml(contact.source || "Non renseignee")}</strong></div>
+        <div class="info-tile"><span>Tempo</span><strong>${escapeHtml(due.label)}</strong></div>
+        <div class="info-tile"><span>Impact</span><strong>${currency.format(contact.value || 0)}</strong></div>
+        <div class="info-tile"><span>Pilote</span><strong>${escapeHtml(contact.owner || "Mathis")}</strong></div>
+        <div class="info-tile"><span>Type</span><strong>${escapeHtml(contact.projectType || "Mission")}</strong></div>
+        <div class="info-tile wide"><span>Friction</span><strong>${escapeHtml(contact.sensitivity || "Aucune friction")}</strong></div>
+        <div class="info-tile wide"><span>Signal source</span><strong>${escapeHtml(contact.source || "Non renseigné")}</strong></div>
       </div>
       ${
         contact.messageDraft
           ? `<section class="message-box">
               <div class="panel-header">
-                <div><p class="eyebrow">Message</p><h2>Relance prete</h2></div>
+                <div><p class="eyebrow">Message</p><h2>Phrase prête</h2></div>
                 <button class="ghost-button compact" type="button" data-action="copy">Copier</button>
               </div>
               <pre>${escapeHtml(contact.messageDraft)}</pre>
@@ -605,8 +757,8 @@ function renderDetail() {
           : ""
       }
       <form class="note-form" data-action="note">
-        <textarea name="note" rows="3" placeholder="Ajouter une note..."></textarea>
-        <button class="primary-button" type="submit">Ajouter la note</button>
+        <textarea name="note" rows="3" placeholder="Ajouter un pense-bête..."></textarea>
+        <button class="primary-button" type="submit">Ajouter</button>
       </form>
       <div class="note-list">${notes}</div>
     </div>
@@ -618,12 +770,141 @@ function renderAssistant() {
   const week = weekContacts();
   const next = due[0] || week[0] || rankedContacts(activeContacts())[0];
   els.assistantBrief.innerHTML = `
-    <div class="mini-item"><strong>${activeContacts().length} sujets actifs</strong><span>${due.length} relances a surveiller</span></div>
-    <div class="mini-item"><strong>${week.length} deadlines semaine</strong><span>${week.slice(0, 3).map((contact) => contact.name).join(" / ") || "RAS"}</span></div>
+    <div class="mini-item"><strong>${activeContacts().length} missions actives</strong><span>${due.length} signaux à surveiller</span></div>
+    <div class="mini-item"><strong>${week.length} impacts semaine</strong><span>${week.slice(0, 3).map((contact) => contact.name).join(" / ") || "RAS"}</span></div>
   `;
   els.assistantNext.innerHTML = next
-    ? `<button class="focus-item" type="button" data-contact="${escapeHtml(next.id)}"><strong>${escapeHtml(next.name)}</strong><span>${escapeHtml(next.nextAction || "Action a definir")}</span></button>`
+    ? `<button class="focus-item" type="button" data-contact="${escapeHtml(next.id)}"><strong>${escapeHtml(next.name)}</strong><span>${escapeHtml(next.nextAction || "Next move à poser")}</span></button>`
     : `<div class="empty-state">Aucun next move.</div>`;
+}
+
+function formatMailDate(value) {
+  if (!value) return "Sans date";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function renderMailDatabase() {
+  if (!els.mailDbSummary) return;
+  const db = state.mailDb || emptyMailDatabase();
+  const imports = db.imports || [];
+  const shoots = db.shoots || [];
+  const tasks = db.tasks || [];
+  els.mailDbSummary.textContent = `${imports.length} mails traités - ${tasks.length} tâches - ${shoots.length} tournages`;
+
+  els.mailDbImports.innerHTML = `
+    <div class="panel-header">
+      <div><p class="eyebrow">Gmail</p><h2>Messages captés</h2></div>
+      <span class="stage-pill en_cours">${imports.length}</span>
+    </div>
+    <div class="mini-list">
+      ${
+        imports.slice(-6).reverse().map((item) => `
+          <article class="mini-item">
+            <strong>${escapeHtml(item.subject || "Mail mission")}</strong>
+            <span>${escapeHtml(item.kind || "mail")} - ${escapeHtml(formatMailDate(item.emailTs || item.importedAt))}</span>
+          </article>
+        `).join("") || `<div class="empty-state">Aucun mail importé pour l'instant.</div>`
+      }
+    </div>
+  `;
+
+  els.mailDbShoots.innerHTML = `
+    <div class="panel-header">
+      <div><p class="eyebrow">Tournages</p><h2>Planning généré</h2></div>
+      <span class="stage-pill relancer">${shoots.length}</span>
+    </div>
+    <div class="mini-list">
+      ${
+        shoots.slice(-6).reverse().map((shoot) => `
+          <article class="mini-item">
+            <strong>${escapeHtml(shoot.title)}</strong>
+            <span>${escapeHtml([shoot.date, shoot.startTime, shoot.location].filter(Boolean).join(" - ") || "À cadrer")}</span>
+          </article>
+        `).join("") || `<div class="empty-state">Aucun tournage détecté.</div>`
+      }
+    </div>
+  `;
+
+  els.mailDbTasks.innerHTML = `
+    <div class="panel-header">
+      <div><p class="eyebrow">Tâches</p><h2>Missions générées</h2></div>
+      <span class="stage-pill clarifier">${tasks.length}</span>
+    </div>
+    <div class="mini-list">
+      ${
+        tasks.slice(-7).reverse().map((task) => `
+          <article class="mini-item">
+            <strong>${escapeHtml(task.title)}</strong>
+            <span>${escapeHtml([task.owner, task.deadline, task.category].filter(Boolean).join(" - ") || "Sans contexte")}</span>
+          </article>
+        `).join("") || `<div class="empty-state">Aucune tâche générée.</div>`
+      }
+    </div>
+  `;
+}
+
+function fillProfileForm() {
+  if (!els.profileForm) return;
+  const session = state.session || defaultSession();
+  const profile = session.profile || {};
+  const workspace = session.workspace || {};
+  const preferences = session.preferences || {};
+  els.profileNameInput.value = profile.name || "";
+  els.profileHandleInput.value = profile.handle || "";
+  els.profileRoleInput.value = profile.role || "";
+  els.profileEmailInput.value = profile.email || "";
+  els.profileAvatarInput.value = profile.avatarText || "";
+  els.profileBioInput.value = profile.bio || "";
+  if (els.profilePhotoInput) els.profilePhotoInput.value = "";
+  els.workspaceNameInput.value = workspace.name || "";
+  els.workspaceTaglineInput.value = workspace.tagline || "";
+  els.workspaceWeekInput.value = workspace.weekLabel || "";
+  els.defaultOwnerInput.value = preferences.defaultOwner || profile.name || "";
+  els.startRouteInput.value = preferences.startRoute || "dashboard";
+  els.densityInput.value = preferences.density || "comfortable";
+  els.motionInput.value = preferences.motion || "on";
+  els.visualIntensityInput.value = preferences.visualIntensity || 82;
+  els.accentColorInput.value = preferences.accentColor || "#7a2cff";
+  els.hotColorInput.value = preferences.hotColor || "#ff1744";
+  els.cyanColorInput.value = preferences.cyanColor || "#00f7ff";
+  els.magentaColorInput.value = preferences.magentaColor || "#ff2bd6";
+  els.jarvisDefaultOpenInput.checked = Boolean(preferences.jarvisDefaultOpen);
+}
+
+function renderProfile() {
+  if (!els.profilePreview) return;
+  const session = state.session || defaultSession();
+  const profile = session.profile || {};
+  const preferences = session.preferences || {};
+  const avatarImage = String(profile.avatarImage || "");
+  const avatarMarkup = avatarImage.startsWith("data:image/")
+    ? `<img src="${escapeHtml(avatarImage)}" alt="${escapeHtml(profile.name || "Profil")}">`
+    : escapeHtml(profile.avatarText || "MD");
+  els.profilePreview.innerHTML = `
+    <div class="profile-hero">
+      <div class="avatar-badge">${avatarMarkup}</div>
+      <div>
+        <p class="eyebrow">${escapeHtml(profile.handle || "Kroma")}</p>
+        <h2>${escapeHtml(profile.name || "Mathis")}</h2>
+        <strong>${escapeHtml(profile.role || "Chef de projet créatif")}</strong>
+      </div>
+    </div>
+    <p class="profile-bio">${escapeHtml(profile.bio || "Profil à compléter.")}</p>
+    <div class="profile-tokens">
+      <span style="--token:${escapeHtml(preferences.accentColor || "#7a2cff")}">Accent</span>
+      <span style="--token:${escapeHtml(preferences.hotColor || "#ff1744")}">Signal</span>
+      <span style="--token:${escapeHtml(preferences.cyanColor || "#00f7ff")}">Cyan</span>
+      <span style="--token:${escapeHtml(preferences.magentaColor || "#ff2bd6")}">Magenta</span>
+    </div>
+    <div class="mini-list profile-stats">
+      <div class="mini-item"><strong>${escapeHtml(preferences.defaultOwner || "Mathis")}</strong><span>Pilote par défaut</span></div>
+      <div class="mini-item"><strong>${escapeHtml(preferences.density || "comfortable")}</strong><span>Densité UI</span></div>
+      <div class="mini-item"><strong>${escapeHtml(String(preferences.visualIntensity || 82))}%</strong><span>Intensité visuelle</span></div>
+    </div>
+  `;
+  fillProfileForm();
 }
 
 function jarvisFocus() {
@@ -637,8 +918,8 @@ function initJarvis() {
   state.agentMessages = [{
     role: "agent",
     text: focus
-      ? `Systeme charge. Priorite detectee: ${focus.name}. ${due.length} relance(s) a surveiller.`
-      : "Systeme charge. Aucun sujet actif detecte."
+      ? `Radar chargé. Signal prioritaire: ${focus.name}. ${due.length} alerte(s) à surveiller.`
+      : "Radar chargé. Aucune mission active détectée."
   }];
 }
 
@@ -667,9 +948,9 @@ function renderJarvis() {
   els.jarvisFeed.scrollTop = els.jarvisFeed.scrollHeight;
 
   els.jarvisSuggestions.innerHTML = `
-    <button type="button" data-agent-command="brief">Brief ${active.length}</button>
-    <button type="button" data-agent-command="relances">Relances ${due.length}</button>
-    <button type="button" data-agent-command="agenda">Agenda</button>
+    <button type="button" data-agent-command="brief">Scan ${active.length}</button>
+    <button type="button" data-agent-command="relances">Signaux ${due.length}</button>
+    <button type="button" data-agent-command="agenda">Tempo</button>
     <button type="button" data-agent-command="${focus ? `cherche ${escapeHtml(focus.name)}` : "focus"}">Focus</button>
   `;
 }
@@ -677,7 +958,7 @@ function renderJarvis() {
 function jarvisReply(raw) {
   const command = String(raw || "").trim();
   if (!command) {
-    pushJarvisMessage("agent", "Dis-moi: brief, relances, agenda, pipeline, cherche un client, ou nouveau suivi.");
+    pushJarvisMessage("agent", "Dis-moi: scan, relances, tempo, missions, base mail, profil, cherche un dossier, ou nouvelle mission.");
     return;
   }
 
@@ -697,57 +978,70 @@ function processJarvisCommand(raw) {
   const focus = jarvisFocus();
 
   if (normalized.includes("aide") || normalized.includes("help")) {
-    pushJarvisMessage("agent", "Commandes: brief, relances, agenda, pipeline, contacts, nouveau suivi, cherche + nom.");
+    pushJarvisMessage("agent", "Commandes: scan, relances, tempo, missions, base mail, profil, dossiers, nouvelle mission, cherche + nom.");
     return;
   }
 
-  if (normalized.includes("nouveau")) {
+  if (normalized.includes("nouveau") || normalized.includes("nouvelle")) {
     setRoute("contacts");
     openDialog();
-    pushJarvisMessage("agent", "Creation ouverte. Remplis la fiche, je garde le CRM synchronise.");
+    pushJarvisMessage("agent", "Nouvelle mission ouverte. Remplis la fiche, je garde le radar synchronisé.");
     return;
   }
 
-  if (normalized.includes("agenda") || normalized.includes("deadline")) {
+  if (normalized.includes("agenda") || normalized.includes("deadline") || normalized.includes("tempo")) {
     setRoute("agenda");
-    pushJarvisMessage("agent", `${week.length} deadline(s) cette semaine. J'ai ouvert l'agenda operationnel.`);
+    pushJarvisMessage("agent", `${week.length} impact(s) cette semaine. J'ai ouvert le tempo opérationnel.`);
     return;
   }
 
-  if (normalized.includes("pipeline")) {
+  if (normalized.includes("pipeline") || normalized.includes("mission")) {
     setRoute("pipeline");
-    pushJarvisMessage("agent", `${active.length} sujet(s) actifs dans le pipeline. J'ai ouvert la vue par etape.`);
+    pushJarvisMessage("agent", `${active.length} mission(s) actives sur le board. Vue par statut ouverte.`);
     return;
   }
 
-  if (normalized.includes("contact") || normalized.includes("crm")) {
+  if (normalized.includes("contact") || normalized.includes("crm") || normalized.includes("dossier")) {
     setRoute("contacts");
-    pushJarvisMessage("agent", "CRM ouvert. Selectionne un suivi ou demande-moi une recherche.");
+    pushJarvisMessage("agent", "Deck missions ouvert. Sélectionne un dossier ou demande-moi une recherche.");
     return;
   }
 
-  if (normalized.includes("relance")) {
+  if (normalized.includes("base") || normalized.includes("mail") || normalized.includes("gmail")) {
+    setRoute("database");
+    const db = state.mailDb || emptyMailDatabase();
+    pushJarvisMessage("agent", `Base mail ouverte: ${(db.imports || []).length} mails, ${(db.tasks || []).length} tâches, ${(db.shoots || []).length} tournages.`);
+    return;
+  }
+
+  if (normalized.includes("profil") || normalized.includes("profile") || normalized.includes("session")) {
+    setRoute("profile");
+    pushJarvisMessage("agent", "Profil ouvert. Tu peux changer l'identité, les couleurs, la densité et le comportement Jarvis.");
+    return;
+  }
+
+  if (normalized.includes("relance") || normalized.includes("signal")) {
     state.stageFilter = "all";
     state.query = "";
     if (els.searchInput) els.searchInput.value = "";
     setRoute("contacts");
     render();
     const lines = due.slice(0, 3).map(contactLine);
-    pushJarvisMessage("agent", lines.length ? `Priorites relance: ${lines.join(" | ")}` : "Aucune relance proche. Tu peux avancer sur du fond.");
+    pushJarvisMessage("agent", lines.length ? `Signaux chauds: ${lines.join(" | ")}` : "Aucun signal chaud. Tu peux avancer sur du fond.");
     return;
   }
 
   if (normalized.includes("focus") || normalized.includes("brief") || normalized.includes("scan")) {
     setRoute("dashboard");
     pushJarvisMessage("agent", focus
-      ? `Brief: ${active.length} sujet(s) actifs, ${due.length} relance(s). Focus maintenant: ${contactLine(focus)}`
-      : "Brief: aucun sujet actif. Systeme clair.");
+      ? `Scan: ${active.length} mission(s) actives, ${due.length} signal(aux). Focus maintenant: ${contactLine(focus)}`
+      : "Scan: aucune mission active. Radar clair.");
     return;
   }
 
   if (normalized.includes("da") || normalized.includes("brand") || normalized.includes("design")) {
     setRoute("brand");
-    pushJarvisMessage("agent", "DA ouverte. Mode Kroma x Spiderverse charge.");
+    pushJarvisMessage("agent", "DA ouverte. Mode Street-Verse chargé: noir, glitch, halftone, contours sticker.");
     return;
   }
 
@@ -760,7 +1054,7 @@ function processJarvisCommand(raw) {
   const results = filteredContacts();
   if (results[0]) state.selectedId = results[0].id;
   render();
-  pushJarvisMessage("agent", `${results.length} resultat(s) pour "${search}". ${results[0] ? `J'ai selectionne ${results[0].name}.` : "Rien de propre trouve."}`);
+  pushJarvisMessage("agent", `${results.length} signal(aux) pour "${search}". ${results[0] ? `J'ai sélectionné ${results[0].name}.` : "Rien de net trouvé."}`);
 }
 
 function render() {
@@ -773,6 +1067,8 @@ function render() {
   renderContactList();
   renderDetail();
   renderAssistant();
+  renderMailDatabase();
+  renderProfile();
   renderJarvis();
 }
 
@@ -783,42 +1079,53 @@ function commandOutput(message) {
 function runCommand(raw) {
   const command = raw.trim();
   if (!command) {
-    commandOutput("Systeme pret. Priorites chargees.");
+    commandOutput("Radar prêt. Missions chargées.");
     return;
   }
   const normalized = normalizeCommand(command);
-  if (normalized.includes("nouveau")) {
+  if (normalized.includes("nouveau") || normalized.includes("nouvelle")) {
     setRoute("contacts");
     openDialog();
-    commandOutput("Creation d'un nouveau suivi.");
+    commandOutput("Nouvelle mission ouverte.");
     return;
   }
-  if (normalized.includes("agenda") || normalized.includes("deadline")) {
+  if (normalized.includes("agenda") || normalized.includes("deadline") || normalized.includes("tempo")) {
     setRoute("agenda");
-    commandOutput(`Agenda ouvert: ${weekContacts().length} deadlines cette semaine.`);
+    commandOutput(`Tempo ouvert: ${weekContacts().length} impacts cette semaine.`);
     return;
   }
-  if (normalized.includes("pipeline")) {
+  if (normalized.includes("pipeline") || normalized.includes("mission")) {
     setRoute("pipeline");
-    commandOutput("Pipeline ouvert.");
+    commandOutput("Board missions ouvert.");
     return;
   }
-  if (normalized.includes("relance")) {
+  if (normalized.includes("base") || normalized.includes("mail") || normalized.includes("gmail")) {
+    setRoute("database");
+    const db = state.mailDb || emptyMailDatabase();
+    commandOutput(`Base mail ouverte: ${(db.imports || []).length} mails traités.`);
+    return;
+  }
+  if (normalized.includes("profil") || normalized.includes("profile") || normalized.includes("session")) {
+    setRoute("profile");
+    commandOutput("Session utilisateur ouverte.");
+    return;
+  }
+  if (normalized.includes("relance") || normalized.includes("signal")) {
     state.stageFilter = "all";
     state.query = "";
     setRoute("contacts");
-    commandOutput(dueContacts().slice(0, 4).map(contactLine).join(" | ") || "Aucune relance proche.");
+    commandOutput(dueContacts().slice(0, 4).map(contactLine).join(" | ") || "Aucun signal chaud.");
     return;
   }
   if (normalized.includes("focus") || normalized.includes("brief")) {
     setRoute("dashboard");
     const next = dueContacts()[0] || rankedContacts(activeContacts())[0];
-    commandOutput(next ? `Focus: ${contactLine(next)}` : "Aucun sujet actif.");
+    commandOutput(next ? `Focus: ${contactLine(next)}` : "Aucune mission active.");
     return;
   }
   if (normalized.includes("da") || normalized.includes("brand")) {
     setRoute("brand");
-    commandOutput("DA ouverte.");
+    commandOutput("DA Street-Verse ouverte.");
     return;
   }
   const search = normalized.replace(/^cherche\s+|^recherche\s+|^trouve\s+/, "").trim() || command;
@@ -827,7 +1134,7 @@ function runCommand(raw) {
   els.searchInput.value = search;
   setRoute("contacts");
   render();
-  commandOutput(`${filteredContacts().length} resultat(s) pour "${search}".`);
+  commandOutput(`${filteredContacts().length} signal(aux) pour "${search}".`);
 }
 
 function fillStageSelect() {
@@ -840,7 +1147,7 @@ function openDialog(contact = null) {
   fillStageSelect();
   els.form.reset();
   els.contactId.value = contact?.id || "";
-  els.dialogTitle.textContent = contact ? "Modifier le suivi" : "Nouveau suivi";
+  els.dialogTitle.textContent = contact ? "Retoucher la mission" : "Nouvelle mission";
   els.nameInput.value = contact?.name || "";
   els.companyInput.value = contact?.company || "";
   els.emailInput.value = contact?.email || "";
@@ -849,7 +1156,7 @@ function openDialog(contact = null) {
   els.valueInput.value = contact?.value || "";
   els.nextActionInput.value = contact?.nextAction || "";
   els.nextActionDateInput.value = contact?.nextActionDate || "";
-  els.ownerInput.value = contact?.owner || "Mathis";
+  els.ownerInput.value = contact?.owner || state.session?.preferences?.defaultOwner || "Mathis";
   els.sourceInput.value = contact?.source || "";
   els.projectTypeInput.value = contact?.projectType || "";
   els.sensitivityInput.value = contact?.sensitivity || "";
@@ -879,6 +1186,42 @@ function formPayload() {
   };
 }
 
+function sessionPayload() {
+  const current = state.session || defaultSession();
+  return {
+    ...current,
+    profile: {
+      name: els.profileNameInput.value,
+      handle: els.profileHandleInput.value,
+      role: els.profileRoleInput.value,
+      email: els.profileEmailInput.value,
+      avatarText: els.profileAvatarInput.value,
+      avatarImage: state.session?.profile?.avatarImage || "",
+      bio: els.profileBioInput.value
+    },
+    workspace: {
+      ...(current.workspace || {}),
+      name: els.workspaceNameInput.value,
+      tagline: els.workspaceTaglineInput.value,
+      weekLabel: els.workspaceWeekInput.value,
+      commandLabel: current.workspace?.commandLabel || "Console Jarvis"
+    },
+    preferences: {
+      ...(current.preferences || {}),
+      accentColor: els.accentColorInput.value,
+      hotColor: els.hotColorInput.value,
+      cyanColor: els.cyanColorInput.value,
+      magentaColor: els.magentaColorInput.value,
+      density: els.densityInput.value,
+      motion: els.motionInput.value,
+      visualIntensity: Number(els.visualIntensityInput.value),
+      defaultOwner: els.defaultOwnerInput.value,
+      startRoute: els.startRouteInput.value,
+      jarvisDefaultOpen: els.jarvisDefaultOpenInput.checked
+    }
+  };
+}
+
 async function saveContact(event) {
   event.preventDefault();
   const id = els.contactId.value;
@@ -889,19 +1232,121 @@ async function saveContact(event) {
     state.selectedId = result.contact.id;
     closeDialog();
     await loadContacts();
-    toast(id ? "Suivi mis a jour" : "Suivi ajoute");
+    toast(id ? "Mission mise à jour" : "Mission ajoutée");
+  } catch (error) {
+    toast(error.message);
+  }
+}
+
+async function saveSession(event) {
+  event.preventDefault();
+  try {
+    const result = await api("/api/session", { method: "PUT", body: JSON.stringify(sessionPayload()) });
+    state.session = result.session;
+    applySession();
+    render();
+    toast("Session sauvegardée");
+  } catch (error) {
+    toast(error.message);
+  }
+}
+
+async function reloadSession() {
+  try {
+    const result = await api("/api/session");
+    state.session = result.session || defaultSession();
+    applySession();
+    render();
+    toast("Session rechargée");
+  } catch (error) {
+    toast(error.message);
+  }
+}
+
+function applyProfilePreset(name) {
+  const presets = {
+    street: {
+      accentColor: "#7a2cff",
+      hotColor: "#ff1744",
+      cyanColor: "#00f7ff",
+      magentaColor: "#ff2bd6",
+      density: "comfortable",
+      motion: "on",
+      visualIntensity: 92
+    },
+    stealth: {
+      accentColor: "#4c4cff",
+      hotColor: "#b855ff",
+      cyanColor: "#8cf8ff",
+      magentaColor: "#9b5cff",
+      density: "compact",
+      motion: "reduced",
+      visualIntensity: 52
+    },
+    impact: {
+      accentColor: "#ff2bd6",
+      hotColor: "#ff1744",
+      cyanColor: "#00f7ff",
+      magentaColor: "#f4d35e",
+      density: "spacious",
+      motion: "on",
+      visualIntensity: 100
+    }
+  };
+  const preset = presets[name];
+  if (!preset) return;
+  els.accentColorInput.value = preset.accentColor;
+  els.hotColorInput.value = preset.hotColor;
+  els.cyanColorInput.value = preset.cyanColor;
+  els.magentaColorInput.value = preset.magentaColor;
+  els.densityInput.value = preset.density;
+  els.motionInput.value = preset.motion;
+  els.visualIntensityInput.value = preset.visualIntensity;
+  state.session = sessionPayload();
+  applySession();
+  renderProfile();
+}
+
+function readProfilePhoto(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Photo impossible à lire."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleProfilePhoto(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    toast("Choisis une image.");
+    return;
+  }
+  if (file.size > 2_000_000) {
+    toast("Photo trop lourde : 2 Mo max.");
+    event.target.value = "";
+    return;
+  }
+  try {
+    const image = await readProfilePhoto(file);
+    state.session = sessionPayload();
+    state.session.profile.avatarImage = image;
+    applySession();
+    renderProfile();
+    toast("Photo chargée");
   } catch (error) {
     toast(error.message);
   }
 }
 
 async function deleteContact(contact) {
-  if (!confirm(`Supprimer ${contact.name} ?`)) return;
+  if (!confirm(`Effacer ${contact.name} ?`)) return;
   try {
     await api(`/api/contacts/${encodeURIComponent(contact.id)}`, { method: "DELETE" });
     state.selectedId = null;
     await loadContacts();
-    toast("Suivi supprime");
+    toast("Mission effacée");
   } catch (error) {
     toast(error.message);
   }
@@ -919,7 +1364,7 @@ async function addNote(event) {
     });
     form.reset();
     await loadContacts();
-    toast("Note ajoutee");
+    toast("Pense-bête ajouté");
   } catch (error) {
     toast(error.message);
   }
@@ -928,7 +1373,7 @@ async function addNote(event) {
 async function copyMessage(contact) {
   try {
     await navigator.clipboard.writeText(contact.messageDraft || "");
-    toast("Message copie");
+    toast("Message copié");
   } catch {
     toast("Copie impossible");
   }
@@ -961,6 +1406,12 @@ document.addEventListener("click", (event) => {
   if (commandButton) {
     els.commandInput.value = commandButton.dataset.command;
     runCommand(commandButton.dataset.command);
+  }
+
+  const presetButton = event.target.closest("[data-profile-preset]");
+  if (presetButton) {
+    applyProfilePreset(presetButton.dataset.profilePreset);
+    return;
   }
 
   const contactButton = event.target.closest("[data-contact]");
@@ -1016,6 +1467,14 @@ document.addEventListener("submit", (event) => {
 els.closeDialogBtn.addEventListener("click", closeDialog);
 els.cancelDialogBtn.addEventListener("click", closeDialog);
 els.form.addEventListener("submit", saveContact);
+els.profileForm?.addEventListener("submit", saveSession);
+els.profileResetBtn?.addEventListener("click", reloadSession);
+els.profilePhotoInput?.addEventListener("change", handleProfilePhoto);
+els.profileForm?.addEventListener("input", () => {
+  state.session = sessionPayload();
+  applySession();
+  renderProfile();
+});
 
 window.addEventListener("hashchange", () => {
   const route = normalizeRoute(location.hash.slice(1));

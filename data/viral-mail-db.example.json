@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "source": "Gmail missions",
+  "watchQuery": "from:sender@example.com",
+  "processedMessageIds": [],
+  "imports": [
+    {
+      "messageId": "demo-message-id",
+      "threadId": "demo-thread-id",
+      "subject": "Demo - Taches de la semaine",
+      "from": "Missions <demo@example.com>",
+      "emailTs": "2026-06-29T09:00:00.000Z",
+      "displayUrl": "",
+      "kind": "weekly_tasks",
+      "importedAt": "2026-06-29T09:00:00.000Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-demo",
+      "title": "Valider le plan de diffusion",
+      "owner": "Mathis",
+      "deadline": "2026-06-30",
+      "status": "open",
+      "category": "Street marketing",
+      "sourceMessageId": "demo-message-id",
+      "crmContactId": "demo-street-launch",
+      "importedAt": "2026-06-29T09:00:00.000Z"
+    }
+  ],
+  "shoots": [
+    {
+      "id": "shoot-demo",
+      "title": "Tournage capsule brand",
+      "date": "2026-07-02",
+      "startTime": "10:00",
+      "endTime": "18:00",
+      "timezone": "Europe/Paris",
+      "location": "Studio Demo",
+      "talent": "",
+      "participants": ["Mathis"],
+      "nextActions": ["Confirmer le lieu", "Verifier la checklist"],
+      "sourceMessageId": "demo-message-id",
+      "crmContactId": "demo-shoot-plan",
+      "importedAt": "2026-06-29T09:00:00.000Z"
+    }
+  ],
+  "weeklyRecaps": []
+}

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "profile": {
+    "name": "Mathis",
+    "handle": "Kroma",
+    "role": "Chef de projet creatif",
+    "email": "",
+    "avatarText": "MD",
+    "avatarImage": "",
+    "bio": "Piloter les missions, garder les deadlines propres et transformer les mails en actions."
+  },
+  "workspace": {
+    "name": "Kroma HQ",
+    "tagline": "Street-Verse ops",
+    "weekLabel": "Semaine active",
+    "commandLabel": "Console Jarvis"
+  },
+  "preferences": {
+    "accentColor": "#7a2cff",
+    "hotColor": "#ff1744",
+    "cyanColor": "#00f7ff",
+    "magentaColor": "#ff2bd6",
+    "density": "comfortable",
+    "motion": "on",
+    "visualIntensity": 82,
+    "defaultOwner": "Mathis",
+    "startRoute": "dashboard",
+    "jarvisDefaultOpen": false
+  }
+}

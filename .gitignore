@@ -8,3 +8,6 @@ yarn-error.log*
 .env
 .env.*
 data/viral-media-mail-automation-state.json
+data/crm.json
+data/user-session.json
+data/viral-mail-db.json

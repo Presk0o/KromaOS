@@ -8,29 +8,31 @@ const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, "public");
 const DATA_DIR = path.join(ROOT, "data");
 const DATA_FILE = path.join(DATA_DIR, "crm.json");
+const MAIL_DB_FILE = path.join(DATA_DIR, "viral-mail-db.json");
+const SESSION_FILE = path.join(DATA_DIR, "user-session.json");
 
 const stages = ["clarifier", "relancer", "en_cours", "bloque", "fait"];
 
 const demoContacts = [
   {
-    id: "viral-scott",
-    name: "Scott - validation plan édito",
-    company: "Client Scott",
+    id: "demo-street-launch",
+    name: "Lancement street campaign",
+    company: "Kroma Demo",
     email: "",
     phone: "",
-    stage: "relancer",
+    stage: "en_cours",
     value: 2500,
-    nextAction: "Confirmer la version finale du plan édito avec Adam avant le call.",
+    nextAction: "Valider le plan de diffusion et les formats prioritaires.",
     nextActionDate: "2026-06-30",
     owner: "Mathis",
-    source: "Récap Viral Media 29/06-05/07",
-    projectType: "Suivi client",
-    sensitivity: "Call mardi 30 juin 2026, 10h-11h. Objectif indiqué : validation du plan éditorial et paiement de 2 500 euros.",
-    messageDraft: "Les gars, pour le call Scott, je veux juste me mettre à jour avant demain.\nAdam, tu peux me confirmer que la dernière version du plan édito est prête ?\nAnis, tu veux qu'on parte sur quel angle au moment de la validation client ?",
+    source: "Demo local",
+    projectType: "Street marketing",
+    sensitivity: "Priorite haute : garder une execution simple, visible, mesurable.",
+    messageDraft: "Je te propose qu'on valide aujourd'hui les formats prioritaires, puis je verrouille le planning de diffusion.",
     notes: [
       {
-        id: "note-scott-1",
-        text: "Point à ne pas laisser dormir : vérifier que le plan édito final est prêt avant le call.",
+        id: "demo-note-1",
+        text: "Objectif : transformer l'energie DA en actions claires.",
         createdAt: "2026-06-29T09:00:00.000Z"
       }
     ],
@@ -38,157 +40,25 @@ const demoContacts = [
     updatedAt: "2026-06-29T09:00:00.000Z"
   },
   {
-    id: "viral-vibes",
-    name: "Vibes - plan éditorial",
-    company: "Vibes",
+    id: "demo-shoot-plan",
+    name: "Tournage capsule brand",
+    company: "Studio Demo",
     email: "",
     phone: "",
     stage: "relancer",
-    value: 0,
-    nextAction: "Récupérer la dernière version auprès d'Adam et confirmer ce qui part au client.",
-    nextActionDate: "2026-06-30",
-    owner: "Mathis",
-    source: "Récap Viral Media 29/06-05/07",
-    projectType: "Suivi client",
-    sensitivity: "Deadline du plan éditorial mardi 30 juin. Sujet utile pour montrer ta capacité à suivre un client.",
-    messageDraft: "Point Vibes : je veux juste confirmer où on en est sur le plan édito.\nAdam, tu peux m'envoyer la dernière version ?\nAnis, dis-moi si tu veux que je prenne le relais pour cadrer le retour client si t'es pris.",
-    notes: [
-      {
-        id: "note-vibes-1",
-        text: "Plan édito à finaliser pour mardi 30 juin.",
-        createdAt: "2026-06-29T09:05:00.000Z"
-      }
-    ],
-    createdAt: "2026-06-29T09:05:00.000Z",
-    updatedAt: "2026-06-29T09:05:00.000Z"
-  },
-  {
-    id: "viral-studio",
-    name: "Studio Ronnie / Jordan",
-    company: "Need For School",
-    email: "",
-    phone: "",
-    stage: "relancer",
-    value: 0,
-    nextAction: "Envoyer 3-4 créneaux possibles pour ne pas bloquer le shoot.",
-    nextActionDate: "2026-06-29",
-    owner: "Mathis",
-    source: "Récap Viral Media 29/06-05/07",
-    projectType: "Suivi presta",
-    sensitivity: "Need For School attend des créneaux précis avant de pouvoir répondre.",
-    messageDraft: "Bonjour Alana,\nMerci pour votre retour.\nJe peux vous proposer plusieurs créneaux pour le shooting :\n- mardi après-midi\n- mercredi matin ou après-midi\n- jeudi matin\nL'idée serait de réserver le studio sur une demi-journée.\nPouvez-vous me dire ce qui serait possible de votre côté, ainsi que les modalités de réservation/caution ?\nMerci à vous,\nMathis Delassus",
-    notes: [
-      {
-        id: "note-studio-1",
-        text: "Sujet à garder vivant : studio Ronnie / validation des disponibilités Jordan.",
-        createdAt: "2026-06-29T09:10:00.000Z"
-      }
-    ],
-    createdAt: "2026-06-29T09:10:00.000Z",
-    updatedAt: "2026-06-29T09:10:00.000Z"
-  },
-  {
-    id: "viral-montages",
-    name: "Priorité des montages",
-    company: "Viral Media / Anis",
-    email: "",
-    phone: "",
-    stage: "clarifier",
-    value: 0,
-    nextAction: "Demander à Anis l'ordre de priorité avant d'avancer.",
-    nextActionDate: "2026-06-29",
-    owner: "Mathis",
-    source: "Récap Viral Media 29/06-05/07",
-    projectType: "Production",
-    sensitivity: "Trop de contenus à monter sans ordre clair : Barça Ronnie, Afterwork, backstages Vibes/Seth Gueko/Ovnie.",
-    messageDraft: "Anis, tu veux que je priorise quel montage en premier cette semaine ?\nJ'ai Barça Ronnie, Afterwork et les backstages Vibes/Seth Gueko/Ovnie.\nJe préfère te demander avant d'avancer dans le mauvais ordre.",
-    notes: [
-      {
-        id: "note-montages-1",
-        text: "Éviter d'avancer dans le mauvais sens : obtenir la priorité avant montage.",
-        createdAt: "2026-06-29T09:15:00.000Z"
-      }
-    ],
-    createdAt: "2026-06-29T09:15:00.000Z",
-    updatedAt: "2026-06-29T09:15:00.000Z"
-  },
-  {
-    id: "viral-fiche-poste",
-    name: "Fiche de poste signée",
-    company: "Viral Media / Anis",
-    email: "",
-    phone: "",
-    stage: "clarifier",
-    value: 0,
-    nextAction: "Renvoyer la fiche de poste signée quand elle est prête.",
+    value: 900,
+    nextAction: "Confirmer le lieu, les participants et la checklist matos.",
     nextActionDate: "2026-07-02",
     owner: "Mathis",
-    source: "Récap Viral Media 29/06-05/07",
-    projectType: "Admin",
-    sensitivity: "Simple mais important pour cadrer ton rôle.",
-    messageDraft: "",
-    notes: [
-      {
-        id: "note-fiche-1",
-        text: "Anis attend la fiche de poste signée.",
-        createdAt: "2026-06-29T09:20:00.000Z"
-      }
-    ],
-    createdAt: "2026-06-29T09:20:00.000Z",
-    updatedAt: "2026-06-29T09:20:00.000Z"
-  },
-  {
-    id: "viral-0107",
-    name: "Date 01/07 à confirmer",
-    company: "Concert / format Imprévu",
-    email: "",
-    phone: "",
-    stage: "bloque",
-    value: 0,
-    nextAction: "Confirmer l'événement et le vrai jour dans le groupe.",
-    nextActionDate: "2026-06-29",
-    owner: "Mathis",
-    source: "Récap Viral Media 29/06-05/07",
-    projectType: "Planning tournage",
-    sensitivity: "Le mail mentionne Mar 01/07, alors que le 1er juillet 2026 tombe un mercredi.",
-    messageDraft: "Juste pour éviter une erreur de planning : le mail indique \"Mar 01/07\" pour le concert / tournage Imprévu à 19h.\nOn confirme bien la date exacte et le jour ?",
-    notes: [
-      {
-        id: "note-0107-1",
-        text: "Incohérence jour/date à lever avant planning.",
-        createdAt: "2026-06-29T09:25:00.000Z"
-      }
-    ],
-    createdAt: "2026-06-29T09:25:00.000Z",
-    updatedAt: "2026-06-29T09:25:00.000Z"
-  },
-  {
-    id: "viral-moussa",
-    name: "Format Qui veut boxer Moussa",
-    company: "Moussa / Viral Media",
-    email: "",
-    phone: "",
-    stage: "en_cours",
-    value: 0,
-    nextAction: "Suivre la validation du partenariat avant de caler le format.",
-    nextActionDate: "2026-07-03",
-    owner: "Mathis",
-    source: "Récap Viral Media 29/06-05/07",
-    projectType: "Suivi talents",
-    sensitivity: "Sujet dépendant de la validation du partenariat.",
-    messageDraft: "",
-    notes: [
-      {
-        id: "note-moussa-1",
-        text: "Garder le sujet vivant sans forcer : dépend de la validation partenariat.",
-        createdAt: "2026-06-29T09:30:00.000Z"
-      }
-    ],
-    createdAt: "2026-06-29T09:30:00.000Z",
-    updatedAt: "2026-06-29T09:30:00.000Z"
+    source: "Demo local",
+    projectType: "Tournage",
+    sensitivity: "Cadrer le deroule avant de bloquer l'equipe.",
+    messageDraft: "Je veux verrouiller le lieu, les horaires et la checklist avant le tournage.",
+    notes: [],
+    createdAt: "2026-06-29T10:00:00.000Z",
+    updatedAt: "2026-06-29T10:00:00.000Z"
   }
 ];
-
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -213,6 +83,125 @@ async function readContacts() {
   await ensureDataFile();
   const raw = await fs.readFile(DATA_FILE, "utf8");
   return JSON.parse(raw);
+}
+
+function emptyMailDatabase() {
+  return {
+    version: 1,
+    updatedAt: null,
+    source: "Gmail missions",
+    watchQuery: "from:sender@example.com (subject:(tâches OR taches OR tournage OR invitation) OR tournage OR tasks)",
+    processedMessageIds: [],
+    imports: [],
+    tasks: [],
+    shoots: [],
+    weeklyRecaps: []
+  };
+}
+
+function defaultSession() {
+  return {
+    version: 1,
+    updatedAt: null,
+    profile: {
+      name: "Mathis",
+      handle: "Kroma",
+      role: "Chef de projet créatif",
+      email: "",
+      avatarText: "MD",
+      avatarImage: "",
+      bio: "Piloter Kroma, garder les deadlines propres, transformer les mails en missions actionnables."
+    },
+    workspace: {
+      name: "Kroma HQ",
+      tagline: "Street-Verse ops",
+      weekLabel: "29 juin - 5 juillet",
+      commandLabel: "Console Jarvis"
+    },
+    preferences: {
+      accentColor: "#7a2cff",
+      hotColor: "#ff1744",
+      cyanColor: "#00f7ff",
+      magentaColor: "#ff2bd6",
+      density: "comfortable",
+      motion: "on",
+      visualIntensity: 82,
+      defaultOwner: "Mathis",
+      startRoute: "dashboard",
+      jarvisDefaultOpen: false
+    }
+  };
+}
+
+function isHexColor(value) {
+  return /^#[0-9a-f]{6}$/i.test(String(value || ""));
+}
+
+function sanitizeSession(input = {}, existing = defaultSession()) {
+  const base = { ...defaultSession(), ...existing };
+  const profile = { ...base.profile, ...(input.profile || {}) };
+  const workspace = { ...base.workspace, ...(input.workspace || {}) };
+  const preferences = { ...base.preferences, ...(input.preferences || {}) };
+  const safeColor = (value, fallback) => isHexColor(value) ? value : fallback;
+
+  return {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    profile: {
+      name: String(profile.name || "Mathis").trim().slice(0, 80),
+      handle: String(profile.handle || "Kroma").trim().slice(0, 40),
+      role: String(profile.role || "Chef de projet créatif").trim().slice(0, 100),
+      email: String(profile.email || "").trim().slice(0, 120),
+      avatarText: String(profile.avatarText || "MD").trim().slice(0, 3).toUpperCase(),
+      avatarImage: String(profile.avatarImage || "").startsWith("data:image/") ? String(profile.avatarImage).slice(0, 2_500_000) : "",
+      bio: String(profile.bio || "").trim().slice(0, 320)
+    },
+    workspace: {
+      name: String(workspace.name || "Kroma HQ").trim().slice(0, 80),
+      tagline: String(workspace.tagline || "Street-Verse ops").trim().slice(0, 80),
+      weekLabel: String(workspace.weekLabel || "29 juin - 5 juillet").trim().slice(0, 80),
+      commandLabel: String(workspace.commandLabel || "Console Jarvis").trim().slice(0, 80)
+    },
+    preferences: {
+      accentColor: safeColor(preferences.accentColor, "#7a2cff"),
+      hotColor: safeColor(preferences.hotColor, "#ff1744"),
+      cyanColor: safeColor(preferences.cyanColor, "#00f7ff"),
+      magentaColor: safeColor(preferences.magentaColor, "#ff2bd6"),
+      density: ["compact", "comfortable", "spacious"].includes(preferences.density) ? preferences.density : "comfortable",
+      motion: ["on", "reduced"].includes(preferences.motion) ? preferences.motion : "on",
+      visualIntensity: Math.max(20, Math.min(100, Number(preferences.visualIntensity) || 82)),
+      defaultOwner: String(preferences.defaultOwner || profile.name || "Mathis").trim().slice(0, 80),
+      startRoute: ["dashboard", "pipeline", "agenda", "contacts", "database", "assistant", "brand", "profile"].includes(preferences.startRoute)
+        ? preferences.startRoute
+        : "dashboard",
+      jarvisDefaultOpen: Boolean(preferences.jarvisDefaultOpen)
+    }
+  };
+}
+
+async function readMailDatabase() {
+  try {
+    const raw = await fs.readFile(MAIL_DB_FILE, "utf8");
+    return JSON.parse(raw);
+  } catch (error) {
+    if (error.code === "ENOENT") return emptyMailDatabase();
+    throw error;
+  }
+}
+
+async function readSession() {
+  try {
+    const raw = await fs.readFile(SESSION_FILE, "utf8");
+    return sanitizeSession(JSON.parse(raw));
+  } catch (error) {
+    if (error.code === "ENOENT") return defaultSession();
+    throw error;
+  }
+}
+
+async function writeSession(session) {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(SESSION_FILE, `${JSON.stringify(session, null, 2)}\n`);
 }
 
 async function writeContacts(contacts) {
@@ -301,6 +290,24 @@ async function handleApi(req, res, url) {
 
   if (req.method === "GET" && url.pathname === "/api/contacts") {
     sendJson(res, 200, { contacts: rankContacts(contacts), stages });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/mail-database") {
+    sendJson(res, 200, await readMailDatabase());
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/session") {
+    sendJson(res, 200, { session: await readSession() });
+    return;
+  }
+
+  if (req.method === "PUT" && url.pathname === "/api/session") {
+    const current = await readSession();
+    const session = sanitizeSession(await readBody(req), current);
+    await writeSession(session);
+    sendJson(res, 200, { session });
     return;
   }
 
