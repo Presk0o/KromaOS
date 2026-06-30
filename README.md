@@ -5,6 +5,14 @@ Il tourne avec un serveur Node, une interface web et un stockage dans `data/crm.
 
 ## Lancer
 
+Double-cliquer sur :
+
+```text
+start-crm.bat
+```
+
+Ou lancer en ligne de commande :
+
 ```powershell
 npm start
 ```
