@@ -178,6 +178,58 @@
       </main>
     </div>
 
+    <section class="jarvis-shell" id="jarvisShell" aria-label="Mini Jarvis">
+      <button class="jarvis-orb" id="jarvisToggle" type="button" aria-expanded="false" aria-controls="jarvisPanel">
+        <span class="orb-ring ring-one" aria-hidden="true"></span>
+        <span class="orb-ring ring-two" aria-hidden="true"></span>
+        <span class="orb-core" aria-hidden="true">
+          <span class="orb-eye"></span>
+        </span>
+        <span class="orb-label">Jarvis</span>
+        <span class="orb-count" id="jarvisCount">0</span>
+      </button>
+
+      <aside class="jarvis-panel" id="jarvisPanel" aria-live="polite">
+        <div class="jarvis-header">
+          <div>
+            <p class="eyebrow">Agent integre</p>
+            <h2>Mini Jarvis</h2>
+          </div>
+          <div class="jarvis-status">
+            <span></span>
+            <strong id="jarvisMode">Online</strong>
+          </div>
+        </div>
+
+        <div class="jarvis-visual" aria-hidden="true">
+          <div class="jarvis-radar"></div>
+          <div class="jarvis-bars">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="jarvis-feed" id="jarvisFeed"></div>
+
+        <div class="jarvis-suggestions" id="jarvisSuggestions">
+          <button type="button" data-agent-command="brief">Brief</button>
+          <button type="button" data-agent-command="relances">Relances</button>
+          <button type="button" data-agent-command="agenda">Agenda</button>
+          <button type="button" data-agent-command="focus">Focus</button>
+        </div>
+
+        <form class="jarvis-form" id="jarvisForm">
+          <label for="jarvisInput">Commande Jarvis</label>
+          <div>
+            <input id="jarvisInput" autocomplete="off" placeholder="brief, relances, ouvre agenda, cherche Vibes...">
+            <button class="primary-button compact" type="submit">Envoyer</button>
+          </div>
+        </form>
+      </aside>
+    </section>
+
     <dialog id="contactDialog">
       <form method="dialog" class="dialog-card" id="contactForm">
         <div class="dialog-header">

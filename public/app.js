@@ -36,7 +36,9 @@ const state = {
   route: normalizeRoute(location.hash.slice(1)),
   selectedId: null,
   query: "",
-  stageFilter: "all"
+  stageFilter: "all",
+  agentOpen: false,
+  agentMessages: []
 };
 
 const els = {
@@ -86,7 +88,15 @@ const els = {
   sourceInput: document.querySelector("#sourceInput"),
   projectTypeInput: document.querySelector("#projectTypeInput"),
   sensitivityInput: document.querySelector("#sensitivityInput"),
-  messageDraftInput: document.querySelector("#messageDraftInput")
+  messageDraftInput: document.querySelector("#messageDraftInput"),
+  jarvisShell: document.querySelector("#jarvisShell"),
+  jarvisToggle: document.querySelector("#jarvisToggle"),
+  jarvisCount: document.querySelector("#jarvisCount"),
+  jarvisMode: document.querySelector("#jarvisMode"),
+  jarvisFeed: document.querySelector("#jarvisFeed"),
+  jarvisSuggestions: document.querySelector("#jarvisSuggestions"),
+  jarvisForm: document.querySelector("#jarvisForm"),
+  jarvisInput: document.querySelector("#jarvisInput")
 };
 
 const currency = new Intl.NumberFormat("fr-FR", {
@@ -183,6 +193,10 @@ function weekContacts() {
 function contactLine(contact) {
   const due = dueMeta(contact);
   return `${contact.name} - ${due.label} - ${contact.nextAction || "Action a definir"}`;
+}
+
+function normalizeCommand(value) {
+  return String(value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 const staticStorageKey = "kroma-crm-static-contacts-v1";
@@ -317,6 +331,7 @@ async function loadContacts() {
   state.contacts = payload.contacts;
   state.stages = payload.stages || stageOrder;
   if (!state.selectedId && state.contacts.length) state.selectedId = rankedContacts()[0].id;
+  initJarvis();
   render();
 }
 
@@ -611,6 +626,143 @@ function renderAssistant() {
     : `<div class="empty-state">Aucun next move.</div>`;
 }
 
+function jarvisFocus() {
+  return dueContacts()[0] || weekContacts()[0] || rankedContacts(activeContacts())[0];
+}
+
+function initJarvis() {
+  if (state.agentMessages.length) return;
+  const due = dueContacts();
+  const focus = jarvisFocus();
+  state.agentMessages = [{
+    role: "agent",
+    text: focus
+      ? `Systeme charge. Priorite detectee: ${focus.name}. ${due.length} relance(s) a surveiller.`
+      : "Systeme charge. Aucun sujet actif detecte."
+  }];
+}
+
+function pushJarvisMessage(role, text) {
+  state.agentMessages = [...state.agentMessages, { role, text }].slice(-10);
+  renderJarvis();
+}
+
+function renderJarvis() {
+  if (!els.jarvisShell) return;
+  const due = dueContacts();
+  const active = activeContacts();
+  const focus = jarvisFocus();
+
+  els.jarvisShell.classList.toggle("open", state.agentOpen);
+  els.jarvisToggle.setAttribute("aria-expanded", String(state.agentOpen));
+  els.jarvisCount.textContent = due.length;
+  els.jarvisMode.textContent = due.length ? `${due.length} alerte${due.length > 1 ? "s" : ""}` : "Clear";
+
+  els.jarvisFeed.innerHTML = state.agentMessages.map((message) => `
+    <article class="jarvis-message ${escapeHtml(message.role)}">
+      <span>${message.role === "user" ? "Toi" : "Jarvis"}</span>
+      <p>${escapeHtml(message.text)}</p>
+    </article>
+  `).join("");
+  els.jarvisFeed.scrollTop = els.jarvisFeed.scrollHeight;
+
+  els.jarvisSuggestions.innerHTML = `
+    <button type="button" data-agent-command="brief">Brief ${active.length}</button>
+    <button type="button" data-agent-command="relances">Relances ${due.length}</button>
+    <button type="button" data-agent-command="agenda">Agenda</button>
+    <button type="button" data-agent-command="${focus ? `cherche ${escapeHtml(focus.name)}` : "focus"}">Focus</button>
+  `;
+}
+
+function jarvisReply(raw) {
+  const command = String(raw || "").trim();
+  if (!command) {
+    pushJarvisMessage("agent", "Dis-moi: brief, relances, agenda, pipeline, cherche un client, ou nouveau suivi.");
+    return;
+  }
+
+  pushJarvisMessage("user", command);
+  els.jarvisMode.textContent = "Analyse";
+
+  window.setTimeout(() => {
+    processJarvisCommand(command);
+  }, 180);
+}
+
+function processJarvisCommand(raw) {
+  const normalized = normalizeCommand(raw);
+  const due = dueContacts();
+  const week = weekContacts();
+  const active = activeContacts();
+  const focus = jarvisFocus();
+
+  if (normalized.includes("aide") || normalized.includes("help")) {
+    pushJarvisMessage("agent", "Commandes: brief, relances, agenda, pipeline, contacts, nouveau suivi, cherche + nom.");
+    return;
+  }
+
+  if (normalized.includes("nouveau")) {
+    setRoute("contacts");
+    openDialog();
+    pushJarvisMessage("agent", "Creation ouverte. Remplis la fiche, je garde le CRM synchronise.");
+    return;
+  }
+
+  if (normalized.includes("agenda") || normalized.includes("deadline")) {
+    setRoute("agenda");
+    pushJarvisMessage("agent", `${week.length} deadline(s) cette semaine. J'ai ouvert l'agenda operationnel.`);
+    return;
+  }
+
+  if (normalized.includes("pipeline")) {
+    setRoute("pipeline");
+    pushJarvisMessage("agent", `${active.length} sujet(s) actifs dans le pipeline. J'ai ouvert la vue par etape.`);
+    return;
+  }
+
+  if (normalized.includes("contact") || normalized.includes("crm")) {
+    setRoute("contacts");
+    pushJarvisMessage("agent", "CRM ouvert. Selectionne un suivi ou demande-moi une recherche.");
+    return;
+  }
+
+  if (normalized.includes("relance")) {
+    state.stageFilter = "all";
+    state.query = "";
+    if (els.searchInput) els.searchInput.value = "";
+    setRoute("contacts");
+    render();
+    const lines = due.slice(0, 3).map(contactLine);
+    pushJarvisMessage("agent", lines.length ? `Priorites relance: ${lines.join(" | ")}` : "Aucune relance proche. Tu peux avancer sur du fond.");
+    return;
+  }
+
+  if (normalized.includes("focus") || normalized.includes("brief") || normalized.includes("scan")) {
+    setRoute("dashboard");
+    pushJarvisMessage("agent", focus
+      ? `Brief: ${active.length} sujet(s) actifs, ${due.length} relance(s). Focus maintenant: ${contactLine(focus)}`
+      : "Brief: aucun sujet actif. Systeme clair.");
+    return;
+  }
+
+  if (normalized.includes("da") || normalized.includes("brand") || normalized.includes("design")) {
+    setRoute("brand");
+    pushJarvisMessage("agent", "DA ouverte. Mode Kroma x Spiderverse charge.");
+    return;
+  }
+
+  const search = normalized.replace(/^cherche\s+|^recherche\s+|^trouve\s+|^ouvre\s+/, "").trim() || raw;
+  state.query = search;
+  state.stageFilter = "all";
+  if (els.searchInput) els.searchInput.value = search;
+  setRoute("contacts");
+  render();
+  const results = filteredContacts();
+  if (results[0]) state.selectedId = results[0].id;
+  render();
+  pushJarvisMessage("agent", `${results.length} resultat(s) pour "${search}". ${results[0] ? `J'ai selectionne ${results[0].name}.` : "Rien de propre trouve."}`);
+}
+
 function render() {
   renderShell();
   renderMetrics();
@@ -621,6 +773,7 @@ function render() {
   renderContactList();
   renderDetail();
   renderAssistant();
+  renderJarvis();
 }
 
 function commandOutput(message) {
@@ -633,7 +786,7 @@ function runCommand(raw) {
     commandOutput("Systeme pret. Priorites chargees.");
     return;
   }
-  const normalized = command.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const normalized = normalizeCommand(command);
   if (normalized.includes("nouveau")) {
     setRoute("contacts");
     openDialog();
@@ -790,6 +943,14 @@ function toast(message) {
 }
 
 document.addEventListener("click", (event) => {
+  const agentButton = event.target.closest("[data-agent-command]");
+  if (agentButton) {
+    state.agentOpen = true;
+    renderJarvis();
+    jarvisReply(agentButton.dataset.agentCommand);
+    return;
+  }
+
   const routeButton = event.target.closest("[data-route]");
   if (routeButton) setRoute(routeButton.dataset.route);
 
@@ -822,6 +983,18 @@ document.addEventListener("click", (event) => {
 els.commandForm.addEventListener("submit", (event) => {
   event.preventDefault();
   runCommand(els.commandInput.value);
+});
+
+els.jarvisToggle?.addEventListener("click", () => {
+  state.agentOpen = !state.agentOpen;
+  renderJarvis();
+  if (state.agentOpen) window.setTimeout(() => els.jarvisInput?.focus(), 120);
+});
+
+els.jarvisForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  jarvisReply(els.jarvisInput.value);
+  els.jarvisInput.value = "";
 });
 
 els.searchInput.addEventListener("input", (event) => {
