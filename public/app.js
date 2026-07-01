@@ -14,6 +14,7 @@ const routeMeta = {
   agenda: ["Tempo", "Agenda des impacts"],
   contacts: ["Dossiers", "Deck missions"],
   database: ["Automation mail", "Base missions"],
+  ideas: ["Canva engine", "Idea Studio"],
   assistant: ["Jarvis layer", "Agent tactique"],
   brand: ["Direction artistique", "Street-Verse"],
   profile: ["Session utilisateur", "Profil"]
@@ -23,6 +24,11 @@ const routeAliases = {
   crm: "contacts",
   base: "database",
   mail: "database",
+  idee: "ideas",
+  idees: "ideas",
+  idea: "ideas",
+  canva: "ideas",
+  spotify: "ideas",
   kroma: "assistant",
   os: "assistant",
   da: "brand",
@@ -44,6 +50,7 @@ const state = {
   selectedId: null,
   query: "",
   stageFilter: "all",
+  ideaStudio: null,
   agentOpen: false,
   agentMessages: []
 };
@@ -58,6 +65,7 @@ const els = {
   navDue: document.querySelector("#navDue"),
   navDone: document.querySelector("#navDone"),
   navMail: document.querySelector("#navMail"),
+  navIdeas: document.querySelector("#navIdeas"),
   navProfile: document.querySelector("#navProfile"),
   brandName: document.querySelector("#brandName"),
   brandTagline: document.querySelector("#brandTagline"),
@@ -84,6 +92,20 @@ const els = {
   mailDbImports: document.querySelector("#mailDbImports"),
   mailDbShoots: document.querySelector("#mailDbShoots"),
   mailDbTasks: document.querySelector("#mailDbTasks"),
+  ideaSummary: document.querySelector("#ideaSummary"),
+  ideaForm: document.querySelector("#ideaForm"),
+  ideaMissionInput: document.querySelector("#ideaMissionInput"),
+  ideaFormatInput: document.querySelector("#ideaFormatInput"),
+  ideaAngleInput: document.querySelector("#ideaAngleInput"),
+  ideaGoalInput: document.querySelector("#ideaGoalInput"),
+  ideaBrief: document.querySelector("#ideaBrief"),
+  ideaOutput: document.querySelector("#ideaOutput"),
+  ideaCopyBtn: document.querySelector("#ideaCopyBtn"),
+  ideaCanvaBtn: document.querySelector("#ideaCanvaBtn"),
+  spotifyUrlInput: document.querySelector("#spotifyUrlInput"),
+  spotifyOpenBtn: document.querySelector("#spotifyOpenBtn"),
+  spotifyMoodButtons: document.querySelector("#spotifyMoodButtons"),
+  spotifyEmbed: document.querySelector("#spotifyEmbed"),
   profilePreview: document.querySelector("#profilePreview"),
   profileForm: document.querySelector("#profileForm"),
   profileNameInput: document.querySelector("#profileNameInput"),
@@ -172,6 +194,101 @@ const mindset = {
   "2026-07-04": "Rendre le travail visible, sinon il n'existe pas.",
   "2026-07-05": "Review, preuve, prochain move."
 };
+
+const ideaStorageKey = "kroma-crm-idea-studio-v1";
+
+const ideaFormats = {
+  instagram_post: {
+    label: "Post Instagram",
+    canvaType: "instagram_post",
+    size: "1080x1080",
+    url: "https://www.canva.com/create/instagram-posts/"
+  },
+  your_story: {
+    label: "Story / Reel",
+    canvaType: "your_story",
+    size: "1080x1920",
+    url: "https://www.canva.com/create/instagram-stories/"
+  },
+  flyer: {
+    label: "Flyer street",
+    canvaType: "flyer",
+    size: "A5 ou A4",
+    url: "https://www.canva.com/create/flyers/"
+  },
+  poster: {
+    label: "Poster",
+    canvaType: "poster",
+    size: "Affiche",
+    url: "https://www.canva.com/create/posters/"
+  },
+  youtube_thumbnail: {
+    label: "Miniature YouTube",
+    canvaType: "youtube_thumbnail",
+    size: "1280x720",
+    url: "https://www.canva.com/create/youtube-thumbnails/"
+  },
+  pinterest_pin: {
+    label: "Pin Pinterest",
+    canvaType: "pinterest_pin",
+    size: "1000x1500",
+    url: "https://www.canva.com/create/pinterest-pins/"
+  }
+};
+
+const ideaAngles = {
+  street_launch: "lancement street, impact direct, annonce visible",
+  behind_scene: "backstage tournage, preuve terrain, energie crew",
+  social_proof: "preuve sociale, resultats, avant/apres",
+  recruitment: "recrutement crew, culture, appel aux profils chauds",
+  offer: "offre commerciale, desir, objection reduite",
+  event: "event, rendez-vous, rarete, deadline"
+};
+
+const ideaBlueprints = [
+  {
+    title: "Signal Drop",
+    hook: "Une accroche courte qui arrive comme une alerte.",
+    mechanic: "Visuel plein cadre, typo massive, sticker contour et CTA direct.",
+    asset: "Logo Kroma glitch, trame halftone, ville noire, eclats violet/rouge/cyan.",
+    cta: "Passe a l'action"
+  },
+  {
+    title: "Back Alley Proof",
+    hook: "Montrer l'envers du decor avant de vendre le resultat.",
+    mechanic: "Sequence 3 temps : probleme, action terrain, impact final.",
+    asset: "Photos backstage, fleches graffiti, annotations façon carnet tactique.",
+    cta: "Voir le plan"
+  },
+  {
+    title: "Comic Split",
+    hook: "Un avant/apres ultra lisible, coupe en cases comics.",
+    mechanic: "Deux panneaux, contraste brut, score final en badge neon.",
+    asset: "Decoupage BD, glitch rouge/cyan, texture papier imprime.",
+    cta: "Debloquer le move"
+  },
+  {
+    title: "Crew Call",
+    hook: "Un appel qui donne envie d'appartenir au crew.",
+    mechanic: "Portrait ou silhouette, promesse courte, criteres en tags.",
+    asset: "Noir profond, aura violet electrique, doodles street, contour sticker.",
+    cta: "Rejoins le crew"
+  },
+  {
+    title: "Mission Card",
+    hook: "Transformer le brief client en carte de mission claire.",
+    mechanic: "Objectif, deadline, livrable et next move en quatre blocs.",
+    asset: "Interface Jarvis, radar, lignes techniques, punchlines manuscrites.",
+    cta: "Verrouiller"
+  },
+  {
+    title: "Noise Breaker",
+    hook: "Casser le feed avec une image volontairement sale et premium.",
+    mechanic: "Fond noir, splash violet, phrase tres courte, micro details.",
+    asset: "Spray, grain, halftone, contour blanc epais, ombre cyan/rouge.",
+    cta: "Regarde ici"
+  }
+];
 
 function isoDate(date) {
   const y = date.getFullYear();
@@ -290,6 +407,169 @@ function emptyMailDatabase() {
 const staticStorageKey = "kroma-crm-static-contacts-v1";
 const staticSessionStorageKey = "kroma-crm-session-v1";
 const staticMailDbStorageKey = "kroma-crm-mail-db-v1";
+
+function defaultIdeaStudio() {
+  return {
+    selectedMissionId: "",
+    format: "instagram_post",
+    angle: "street_launch",
+    goal: "",
+    ideas: [],
+    selectedIdeaId: "",
+    canvaBrief: "",
+    spotifyUrl: ""
+  };
+}
+
+function readIdeaStudio() {
+  try {
+    const saved = localStorage.getItem(ideaStorageKey);
+    return saved ? { ...defaultIdeaStudio(), ...JSON.parse(saved) } : defaultIdeaStudio();
+  } catch {
+    return defaultIdeaStudio();
+  }
+}
+
+function writeIdeaStudio(studio = state.ideaStudio) {
+  try {
+    localStorage.setItem(ideaStorageKey, JSON.stringify(studio || defaultIdeaStudio()));
+  } catch {
+    // localStorage can be blocked in some browsers; the studio still works in memory.
+  }
+}
+
+function currentIdeaStudio() {
+  if (!state.ideaStudio) state.ideaStudio = readIdeaStudio();
+  return state.ideaStudio;
+}
+
+function selectedIdeaContact() {
+  const studio = currentIdeaStudio();
+  return state.contacts.find((contact) => contact.id === studio.selectedMissionId)
+    || state.contacts.find((contact) => contact.id === state.selectedId)
+    || rankedContacts(activeContacts())[0]
+    || state.contacts[0]
+    || null;
+}
+
+function ideaContactLabel(contact) {
+  if (!contact) return "Mission Kroma";
+  return [contact.name, contact.company].filter(Boolean).join(" / ");
+}
+
+function buildIdeaSet(contact, studio) {
+  const format = ideaFormats[studio.format] || ideaFormats.instagram_post;
+  const angle = ideaAngles[studio.angle] || ideaAngles.street_launch;
+  const mission = contact?.name || "Mission Kroma";
+  const project = contact?.projectType || "campagne creative";
+  const nextMove = contact?.nextAction || "poser un next move clair";
+  const goal = studio.goal || `Faire avancer ${mission}`;
+
+  return ideaBlueprints.map((blueprint, index) => {
+    const title = `${blueprint.title}: ${mission}`;
+    const idea = {
+      id: `idea-${Date.now()}-${index}`,
+      title,
+      format: studio.format,
+      angle: studio.angle,
+      hook: `${blueprint.hook} Axe: ${angle}.`,
+      mechanic: `${blueprint.mechanic} Mission: ${project}.`,
+      asset: blueprint.asset,
+      cta: blueprint.cta,
+      goal,
+      nextMove
+    };
+    idea.canvaBrief = buildCanvaBrief(idea, contact, studio);
+    return idea;
+  });
+}
+
+function selectedIdea() {
+  const studio = currentIdeaStudio();
+  return studio.ideas.find((idea) => idea.id === studio.selectedIdeaId) || studio.ideas[0] || null;
+}
+
+function buildCanvaBrief(idea, contact, studio) {
+  const format = ideaFormats[studio.format] || ideaFormats.instagram_post;
+  const angle = ideaAngles[studio.angle] || ideaAngles.street_launch;
+  const mission = ideaContactLabel(contact);
+  return [
+    `CANVA BRIEF - ${format.label}`,
+    `Format: ${format.label} (${format.size})`,
+    `Mission: ${mission}`,
+    `Objectif: ${idea?.goal || studio.goal || "Generer une idee Kroma actionnable"}`,
+    `Angle: ${angle}`,
+    "",
+    "Direction artistique:",
+    "- Kroma Street-Verse: noir profond, violet electrique, rouge/cyan glitch, magenta.",
+    "- Energie street marketing premium: contours sticker, halftone, spray, ombres nettes.",
+    "- Lisible en 2 secondes, impact fort, pas de visuel trop charge.",
+    "",
+    "Concept:",
+    `- Titre: ${idea?.title || "Signal Drop"}`,
+    `- Hook: ${idea?.hook || "Accroche courte et punchy."}`,
+    `- Mecanique: ${idea?.mechanic || "Visuel simple avec CTA direct."}`,
+    `- Assets: ${idea?.asset || "Logo Kroma, textures comic, ville noire."}`,
+    `- CTA: ${idea?.cta || "Passer a l'action"}`,
+    "",
+    "Texte a integrer:",
+    `- Headline: ${contact?.name || "Mission Kroma"}`,
+    `- Sous-texte: ${contact?.nextAction || idea?.nextMove || "Next move a verrouiller."}`,
+    `- Signature: ${state.session?.workspace?.name || "Kroma HQ"}`
+  ].join("\n");
+}
+
+function updateSelectedIdea(id) {
+  const studio = currentIdeaStudio();
+  const idea = studio.ideas.find((item) => item.id === id);
+  if (!idea) return;
+  studio.selectedIdeaId = idea.id;
+  studio.canvaBrief = idea.canvaBrief;
+  writeIdeaStudio(studio);
+  renderIdeas();
+}
+
+function spotifyEmbedUrl(raw) {
+  const value = String(raw || "").trim();
+  if (!value) return "";
+  try {
+    const url = new URL(value);
+    if (!url.hostname.endsWith("spotify.com")) return "";
+    const parts = url.pathname.split("/").filter(Boolean);
+    const offset = parts[0] === "embed" ? 1 : 0;
+    const type = parts[offset];
+    const id = parts[offset + 1];
+    const allowed = ["playlist", "album", "track", "artist", "show", "episode"];
+    if (!allowed.includes(type) || !id) return "";
+    return `https://open.spotify.com/embed/${type}/${id}`;
+  } catch {
+    return "";
+  }
+}
+
+function openSpotifySearch(query) {
+  window.open(`https://open.spotify.com/search/${encodeURIComponent(query)}`, "_blank", "noopener");
+}
+
+function mountSpotifyFrame(embed) {
+  if (!els.spotifyEmbed) return;
+  if (!embed) {
+    els.spotifyEmbed.innerHTML = `<div class="spotify-empty">Colle un lien Spotify ou lance une recherche de mood.</div>`;
+    return;
+  }
+  els.spotifyEmbed.innerHTML = `
+    <iframe title="Spotify" src="about:blank" data-src="${escapeHtml(embed)}" width="100%" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  `;
+  const frame = els.spotifyEmbed.querySelector("iframe");
+  const loadFrame = () => {
+    if (frame?.dataset.src) frame.src = frame.dataset.src;
+  };
+  if (document.readyState === "complete") {
+    window.setTimeout(loadFrame, 0);
+  } else {
+    window.addEventListener("load", () => window.setTimeout(loadFrame, 0), { once: true });
+  }
+}
 
 function getBody(options = {}) {
   if (!options.body) return {};
@@ -452,6 +732,7 @@ async function loadContacts() {
   state.contacts = payload.contacts;
   state.mailDb = mailDb;
   state.session = sessionPayload.session || defaultSession();
+  state.ideaStudio = readIdeaStudio();
   state.stages = payload.stages || stageOrder;
   if (!state.selectedId && state.contacts.length) state.selectedId = rankedContacts()[0].id;
   applySession();
@@ -512,6 +793,7 @@ function renderMetrics() {
   els.navDue.textContent = due.length;
   els.navDone.textContent = done.length;
   if (els.navMail) els.navMail.textContent = state.mailDb?.imports?.length || 0;
+  if (els.navIdeas) els.navIdeas.textContent = currentIdeaStudio().ideas.length || "AI";
   if (els.navProfile) els.navProfile.textContent = state.session?.profile?.avatarText || "MD";
 
   const metrics = [
@@ -845,6 +1127,56 @@ function renderMailDatabase() {
   `;
 }
 
+function renderIdeas() {
+  if (!els.ideaOutput) return;
+  const studio = currentIdeaStudio();
+  const currentContact = selectedIdeaContact();
+  if (!studio.selectedMissionId && currentContact) studio.selectedMissionId = currentContact.id;
+  const activeIdea = selectedIdea();
+  const brief = activeIdea?.canvaBrief || studio.canvaBrief || "Choisis une mission puis genere une idee.";
+
+  if (els.ideaMissionInput) {
+    const contactOptions = state.contacts.map((contact) => `
+      <option value="${escapeHtml(contact.id)}">${escapeHtml(ideaContactLabel(contact))}</option>
+    `).join("");
+    els.ideaMissionInput.innerHTML = contactOptions || `<option value="">Mission Kroma</option>`;
+    els.ideaMissionInput.value = studio.selectedMissionId || currentContact?.id || "";
+  }
+  if (els.ideaFormatInput) els.ideaFormatInput.value = studio.format || "instagram_post";
+  if (els.ideaAngleInput) els.ideaAngleInput.value = studio.angle || "street_launch";
+  if (els.ideaGoalInput) els.ideaGoalInput.value = studio.goal || "";
+  if (els.ideaSummary) {
+    els.ideaSummary.textContent = `${studio.ideas.length} idee(s) - ${ideaFormats[studio.format]?.label || "Canva"} - Spotify ${studio.spotifyUrl ? "actif" : "pret"}`;
+  }
+  els.ideaBrief.textContent = brief;
+
+  els.ideaOutput.innerHTML = studio.ideas.length
+    ? studio.ideas.map((idea, index) => `
+      <article class="idea-card ${idea.id === studio.selectedIdeaId ? "active" : ""}">
+        <div class="idea-card-top">
+          <span class="stage-pill ${index % 2 ? "en_cours" : "relancer"}">${escapeHtml(ideaFormats[idea.format]?.label || "Canva")}</span>
+          <button class="ghost-button compact" type="button" data-idea-select="${escapeHtml(idea.id)}">Brief</button>
+        </div>
+        <h3>${escapeHtml(idea.title)}</h3>
+        <p>${escapeHtml(idea.hook)}</p>
+        <div class="idea-specs">
+          <span>${escapeHtml(idea.mechanic)}</span>
+          <span>${escapeHtml(idea.asset)}</span>
+          <strong>${escapeHtml(idea.cta)}</strong>
+        </div>
+      </article>
+    `).join("")
+    : `<article class="panel idea-empty">
+        <p class="eyebrow">Idea Studio</p>
+        <h2>Pas encore d'idees</h2>
+        <p>Choisis une mission, un format Canva, puis lance le generateur.</p>
+      </article>`;
+
+  const embed = spotifyEmbedUrl(studio.spotifyUrl);
+  if (els.spotifyUrlInput) els.spotifyUrlInput.value = studio.spotifyUrl || "";
+  mountSpotifyFrame(embed);
+}
+
 function fillProfileForm() {
   if (!els.profileForm) return;
   const session = state.session || defaultSession();
@@ -951,6 +1283,7 @@ function renderJarvis() {
     <button type="button" data-agent-command="brief">Scan ${active.length}</button>
     <button type="button" data-agent-command="relances">Signaux ${due.length}</button>
     <button type="button" data-agent-command="agenda">Tempo</button>
+    <button type="button" data-agent-command="idees">Idees</button>
     <button type="button" data-agent-command="${focus ? `cherche ${escapeHtml(focus.name)}` : "focus"}">Focus</button>
   `;
 }
@@ -958,7 +1291,7 @@ function renderJarvis() {
 function jarvisReply(raw) {
   const command = String(raw || "").trim();
   if (!command) {
-    pushJarvisMessage("agent", "Dis-moi: scan, relances, tempo, missions, base mail, profil, cherche un dossier, ou nouvelle mission.");
+    pushJarvisMessage("agent", "Dis-moi: scan, relances, tempo, idees, Canva, Spotify, base mail, profil, cherche un dossier, ou nouvelle mission.");
     return;
   }
 
@@ -978,7 +1311,7 @@ function processJarvisCommand(raw) {
   const focus = jarvisFocus();
 
   if (normalized.includes("aide") || normalized.includes("help")) {
-    pushJarvisMessage("agent", "Commandes: scan, relances, tempo, missions, base mail, profil, dossiers, nouvelle mission, cherche + nom.");
+    pushJarvisMessage("agent", "Commandes: scan, relances, tempo, idees, Canva, Spotify, missions, base mail, profil, dossiers, nouvelle mission, cherche + nom.");
     return;
   }
 
@@ -992,6 +1325,12 @@ function processJarvisCommand(raw) {
   if (normalized.includes("agenda") || normalized.includes("deadline") || normalized.includes("tempo")) {
     setRoute("agenda");
     pushJarvisMessage("agent", `${week.length} impact(s) cette semaine. J'ai ouvert le tempo opérationnel.`);
+    return;
+  }
+
+  if (normalized.includes("idee") || normalized.includes("canva") || normalized.includes("spotify") || normalized.includes("creative")) {
+    setRoute("ideas");
+    pushJarvisMessage("agent", "Idea Studio ouvert. Choisis une mission, genere des angles Canva, puis active ton mood Spotify.");
     return;
   }
 
@@ -1068,6 +1407,7 @@ function render() {
   renderDetail();
   renderAssistant();
   renderMailDatabase();
+  renderIdeas();
   renderProfile();
   renderJarvis();
 }
@@ -1092,6 +1432,11 @@ function runCommand(raw) {
   if (normalized.includes("agenda") || normalized.includes("deadline") || normalized.includes("tempo")) {
     setRoute("agenda");
     commandOutput(`Tempo ouvert: ${weekContacts().length} impacts cette semaine.`);
+    return;
+  }
+  if (normalized.includes("idee") || normalized.includes("canva") || normalized.includes("spotify") || normalized.includes("creative")) {
+    setRoute("ideas");
+    commandOutput("Idea Studio ouvert: generateur Canva + Spotify focus.");
     return;
   }
   if (normalized.includes("pipeline") || normalized.includes("mission")) {
@@ -1340,6 +1685,71 @@ async function handleProfilePhoto(event) {
   }
 }
 
+function syncIdeaControls() {
+  const studio = currentIdeaStudio();
+  studio.selectedMissionId = els.ideaMissionInput?.value || studio.selectedMissionId;
+  studio.format = els.ideaFormatInput?.value || studio.format;
+  studio.angle = els.ideaAngleInput?.value || studio.angle;
+  studio.goal = els.ideaGoalInput?.value || "";
+  return studio;
+}
+
+function generateIdeas(event) {
+  event?.preventDefault();
+  const studio = syncIdeaControls();
+  const contact = selectedIdeaContact();
+  studio.ideas = buildIdeaSet(contact, studio);
+  studio.selectedIdeaId = studio.ideas[0]?.id || "";
+  studio.canvaBrief = studio.ideas[0]?.canvaBrief || "";
+  writeIdeaStudio(studio);
+  renderIdeas();
+  toast("Idees generees");
+}
+
+async function copyText(value, successMessage = "Copie") {
+  try {
+    await navigator.clipboard.writeText(value || "");
+    toast(successMessage);
+    return true;
+  } catch {
+    toast("Copie impossible");
+    return false;
+  }
+}
+
+async function copyIdeaBrief() {
+  const studio = currentIdeaStudio();
+  const idea = selectedIdea();
+  const brief = idea?.canvaBrief || studio.canvaBrief || els.ideaBrief?.textContent || "";
+  await copyText(brief, "Brief Canva copie");
+}
+
+async function openCanvaForIdea() {
+  const studio = syncIdeaControls();
+  if (!selectedIdea() && !studio.canvaBrief) generateIdeas();
+  await copyIdeaBrief();
+  const format = ideaFormats[studio.format] || ideaFormats.instagram_post;
+  window.open(format.url || "https://www.canva.com/ai-design/", "_blank", "noopener");
+}
+
+function saveSpotifyUrl() {
+  const studio = currentIdeaStudio();
+  studio.spotifyUrl = els.spotifyUrlInput?.value || "";
+  writeIdeaStudio(studio);
+  renderIdeas();
+}
+
+function openSpotifyMood() {
+  const studio = currentIdeaStudio();
+  studio.spotifyUrl = els.spotifyUrlInput?.value || studio.spotifyUrl;
+  writeIdeaStudio(studio);
+  if (studio.spotifyUrl) {
+    window.open(studio.spotifyUrl, "_blank", "noopener");
+    return;
+  }
+  openSpotifySearch("Miles Morales Spider Verse soundtrack");
+}
+
 async function deleteContact(contact) {
   if (!confirm(`Effacer ${contact.name} ?`)) return;
   try {
@@ -1414,6 +1824,18 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const ideaButton = event.target.closest("[data-idea-select]");
+  if (ideaButton) {
+    updateSelectedIdea(ideaButton.dataset.ideaSelect);
+    return;
+  }
+
+  const spotifyButton = event.target.closest("[data-spotify-search]");
+  if (spotifyButton) {
+    openSpotifySearch(spotifyButton.dataset.spotifySearch);
+    return;
+  }
+
   const contactButton = event.target.closest("[data-contact]");
   if (contactButton) selectContact(contactButton.dataset.contact);
 
@@ -1467,6 +1889,12 @@ document.addEventListener("submit", (event) => {
 els.closeDialogBtn.addEventListener("click", closeDialog);
 els.cancelDialogBtn.addEventListener("click", closeDialog);
 els.form.addEventListener("submit", saveContact);
+els.ideaForm?.addEventListener("submit", generateIdeas);
+els.ideaCopyBtn?.addEventListener("click", copyIdeaBrief);
+els.ideaCanvaBtn?.addEventListener("click", openCanvaForIdea);
+els.spotifyUrlInput?.addEventListener("input", saveSpotifyUrl);
+els.spotifyUrlInput?.addEventListener("change", saveSpotifyUrl);
+els.spotifyOpenBtn?.addEventListener("click", openSpotifyMood);
 els.profileForm?.addEventListener("submit", saveSession);
 els.profileResetBtn?.addEventListener("click", reloadSession);
 els.profilePhotoInput?.addEventListener("change", handleProfilePhoto);

@@ -38,6 +38,10 @@
             <span>Base mail</span>
             <strong id="navMail">0</strong>
           </button>
+          <button class="nav-item" type="button" data-route="ideas">
+            <span>Idees</span>
+            <strong id="navIdeas">0</strong>
+          </button>
           <button class="nav-item" type="button" data-route="assistant">
             <span>Agent</span>
             <strong>AI</strong>
@@ -65,6 +69,7 @@
             <h1 id="routeTitle">Radar Kroma</h1>
           </div>
           <div class="topbar-actions">
+            <button class="ghost-button" type="button" data-command="idees">Idees</button>
             <button class="ghost-button" type="button" data-command="agenda">Tempo</button>
             <button class="primary-button" type="button" id="quickAddBtn">Nouvelle mission</button>
           </div>
@@ -140,7 +145,7 @@
           <div class="section-header">
             <div>
               <p class="eyebrow">Automation mail</p>
-              <h2>Base Viral Media</h2>
+              <h2>Base missions</h2>
             </div>
             <div class="section-summary" id="mailDbSummary">Chargement...</div>
           </div>
@@ -148,6 +153,73 @@
             <article class="panel maildb-panel" id="mailDbImports"></article>
             <article class="panel maildb-panel" id="mailDbShoots"></article>
             <article class="panel maildb-panel" id="mailDbTasks"></article>
+          </div>
+        </section>
+
+        <section class="view" data-view="ideas">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Canva engine</p>
+              <h2>Idea Studio</h2>
+            </div>
+            <div class="section-summary" id="ideaSummary">Pret a generer.</div>
+          </div>
+
+          <div class="idea-layout">
+            <article class="panel idea-control-panel">
+              <p class="eyebrow">Brief builder</p>
+              <h2>Generateur d'idees</h2>
+              <form class="idea-form" id="ideaForm">
+                <label>Mission<select id="ideaMissionInput"></select></label>
+                <label>Format<select id="ideaFormatInput">
+                  <option value="instagram_post">Post Instagram</option>
+                  <option value="your_story">Story / Reel</option>
+                  <option value="flyer">Flyer street</option>
+                  <option value="poster">Poster</option>
+                  <option value="youtube_thumbnail">Miniature YouTube</option>
+                  <option value="pinterest_pin">Pin Pinterest</option>
+                </select></label>
+                <label>Angle<select id="ideaAngleInput">
+                  <option value="street_launch">Lancement street</option>
+                  <option value="behind_scene">Backstage tournage</option>
+                  <option value="social_proof">Preuve sociale</option>
+                  <option value="recruitment">Recrutement crew</option>
+                  <option value="offer">Offre commerciale</option>
+                  <option value="event">Event / rendez-vous</option>
+                </select></label>
+                <label class="wide-field">Objectif<textarea id="ideaGoalInput" rows="4" placeholder="Ex: vendre une offre montage, annoncer un tournage, relancer un client..."></textarea></label>
+                <div class="dialog-actions">
+                  <button class="ghost-button" type="button" id="ideaCopyBtn">Copier brief</button>
+                  <button class="ghost-button" type="button" id="ideaCanvaBtn">Ouvrir Canva</button>
+                  <button class="primary-button" type="submit">Generer</button>
+                </div>
+              </form>
+            </article>
+
+            <article class="panel idea-brief-panel">
+              <p class="eyebrow">Prompt Canva</p>
+              <h2>Brief pret a coller</h2>
+              <pre id="ideaBrief">Choisis une mission puis genere une idee.</pre>
+            </article>
+
+            <article class="panel spotify-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Focus audio</p>
+                  <h2>Spotify layer</h2>
+                </div>
+                <button class="ghost-button compact" type="button" id="spotifyOpenBtn">Ouvrir</button>
+              </div>
+              <label class="spotify-url-field">Lien Spotify<input id="spotifyUrlInput" placeholder="Playlist, album ou track Spotify"></label>
+              <div class="spotify-actions" id="spotifyMoodButtons">
+                <button type="button" data-spotify-search="Miles Morales Spider Verse soundtrack">Spider-Verse</button>
+                <button type="button" data-spotify-search="dark trap instrumental focus">Dark focus</button>
+                <button type="button" data-spotify-search="creative flow hip hop instrumental">Creative flow</button>
+              </div>
+              <div class="spotify-embed" id="spotifyEmbed"></div>
+            </article>
+
+            <section class="idea-output" id="ideaOutput"></section>
           </div>
         </section>
 
@@ -162,6 +234,7 @@
                 <button type="button" data-command="relances">Signaux</button>
                 <button type="button" data-command="focus">Focus</button>
                 <button type="button" data-command="agenda">Tempo</button>
+                <button type="button" data-command="idees">Idees</button>
               </div>
             </article>
             <article class="panel assistant-panel">
@@ -230,6 +303,7 @@
                   <option value="agenda">Tempo</option>
                   <option value="contacts">Dossiers</option>
                   <option value="database">Base mail</option>
+                  <option value="ideas">Idees</option>
                   <option value="assistant">Agent</option>
                   <option value="brand">DA</option>
                   <option value="profile">Profil</option>
@@ -320,6 +394,7 @@
           <button type="button" data-agent-command="brief">Brief</button>
           <button type="button" data-agent-command="relances">Signaux</button>
           <button type="button" data-agent-command="agenda">Tempo</button>
+          <button type="button" data-agent-command="idees">Idees</button>
           <button type="button" data-agent-command="plan">Plan</button>
           <button type="button" data-agent-command="diagnostic">Diagnostic</button>
           <button type="button" data-agent-command="parle">Voix</button>

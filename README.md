@@ -35,6 +35,8 @@ http://localhost:3000
 - Donnees persistantes en local dans `data/crm.json`.
 - Base mail optionnelle via `data/viral-mail-db.json`.
 - Profil utilisateur personnalisable via `data/user-session.json`.
+- Idea Studio : generation d'angles creatifs relies aux missions, brief Canva pret a copier et ouverture du bon format Canva.
+- Spotify focus : collage d'un lien Spotify pour afficher un lecteur embarque, plus recherches de mood rapides.
 
 ## GitHub Pages
 

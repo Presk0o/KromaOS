@@ -171,7 +171,7 @@ function sanitizeSession(input = {}, existing = defaultSession()) {
       motion: ["on", "reduced"].includes(preferences.motion) ? preferences.motion : "on",
       visualIntensity: Math.max(20, Math.min(100, Number(preferences.visualIntensity) || 82)),
       defaultOwner: String(preferences.defaultOwner || profile.name || "Mathis").trim().slice(0, 80),
-      startRoute: ["dashboard", "pipeline", "agenda", "contacts", "database", "assistant", "brand", "profile"].includes(preferences.startRoute)
+      startRoute: ["dashboard", "pipeline", "agenda", "contacts", "database", "ideas", "assistant", "brand", "profile"].includes(preferences.startRoute)
         ? preferences.startRoute
         : "dashboard",
       jarvisDefaultOpen: Boolean(preferences.jarvisDefaultOpen)
