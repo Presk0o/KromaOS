@@ -75,6 +75,7 @@ const els = {
   focusPanel: document.querySelector("#focusPanel"),
   nextPanel: document.querySelector("#nextPanel"),
   briefPanel: document.querySelector("#briefPanel"),
+  creativePanel: document.querySelector("#creativePanel"),
   pipelineBoard: document.querySelector("#pipelineBoard"),
   agendaSummary: document.querySelector("#agendaSummary"),
   agendaGrid: document.querySelector("#agendaGrid"),
@@ -881,6 +882,50 @@ function renderDashboard() {
       }
     </div>
   `;
+
+  if (els.creativePanel) {
+    const studio = currentIdeaStudio();
+    const idea = selectedIdea();
+    const format = ideaFormats[studio.format] || ideaFormats.instagram_post;
+    const contact = selectedIdeaContact();
+    const spotifyReady = Boolean(studio.spotifyUrl);
+    els.creativePanel.innerHTML = `
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Creative Engine</p>
+          <h2>Canva + Spotify dans le HQ</h2>
+        </div>
+        <button class="ghost-button compact" type="button" data-route-target="ideas">Ouvrir studio</button>
+      </div>
+      <div class="creative-dock">
+        <div class="creative-signal">
+          <span class="stage-pill en_cours">${escapeHtml(format.label)}</span>
+          <h3>${escapeHtml(idea?.title || "Genere une piste Canva depuis le HQ")}</h3>
+          <p>${escapeHtml(idea?.hook || `Mission branchee: ${ideaContactLabel(contact)}. Lance une generation pour sortir 6 angles creatifs.`)}</p>
+        </div>
+        <div class="creative-actions">
+          <button class="primary-button compact" type="button" data-hq-idea="generate">Generer 6 idees</button>
+          <button class="ghost-button compact" type="button" data-hq-idea="copy">Copier brief</button>
+          <button class="ghost-button compact" type="button" data-hq-idea="canva">Canva</button>
+          <button class="ghost-button compact" type="button" data-hq-idea="spotify">${spotifyReady ? "Spotify actif" : "Mood Spotify"}</button>
+        </div>
+        <div class="creative-mini">
+          <article>
+            <span>Mission</span>
+            <strong>${escapeHtml(ideaContactLabel(contact))}</strong>
+          </article>
+          <article>
+            <span>Stock</span>
+            <strong>${studio.ideas.length || 0} idee(s)</strong>
+          </article>
+          <article>
+            <span>Audio</span>
+            <strong>${spotifyReady ? "Lecteur pret" : "A connecter"}</strong>
+          </article>
+        </div>
+      </div>
+    `;
+  }
 }
 
 function renderPipeline() {
@@ -1703,7 +1748,21 @@ function generateIdeas(event) {
   studio.canvaBrief = studio.ideas[0]?.canvaBrief || "";
   writeIdeaStudio(studio);
   renderIdeas();
+  renderDashboard();
   toast("Idees generees");
+}
+
+function generateIdeasFromHq() {
+  const studio = currentIdeaStudio();
+  const contact = selectedIdeaContact();
+  if (!studio.selectedMissionId && contact) studio.selectedMissionId = contact.id;
+  if (!studio.goal && contact) {
+    studio.goal = contact.nextAction || `Creer une piste creative pour ${contact.name}`;
+  }
+  writeIdeaStudio(studio);
+  renderIdeas();
+  generateIdeas();
+  commandOutput("Creative Engine: 6 idees Canva generees dans le HQ.");
 }
 
 async function copyText(value, successMessage = "Copie") {
@@ -1719,6 +1778,9 @@ async function copyText(value, successMessage = "Copie") {
 
 async function copyIdeaBrief() {
   const studio = currentIdeaStudio();
+  if (!selectedIdea() && !studio.canvaBrief) {
+    generateIdeasFromHq();
+  }
   const idea = selectedIdea();
   const brief = idea?.canvaBrief || studio.canvaBrief || els.ideaBrief?.textContent || "";
   await copyText(brief, "Brief Canva copie");
@@ -1827,6 +1889,15 @@ document.addEventListener("click", (event) => {
   const ideaButton = event.target.closest("[data-idea-select]");
   if (ideaButton) {
     updateSelectedIdea(ideaButton.dataset.ideaSelect);
+    return;
+  }
+
+  const hqIdeaButton = event.target.closest("[data-hq-idea]");
+  if (hqIdeaButton) {
+    if (hqIdeaButton.dataset.hqIdea === "generate") generateIdeasFromHq();
+    if (hqIdeaButton.dataset.hqIdea === "copy") copyIdeaBrief();
+    if (hqIdeaButton.dataset.hqIdea === "canva") openCanvaForIdea();
+    if (hqIdeaButton.dataset.hqIdea === "spotify") openSpotifyMood();
     return;
   }
 
