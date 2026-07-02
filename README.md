@@ -1,32 +1,38 @@
-# KromaOS CRM
+# Kroma HQ CRM — v2
 
-Mini CRM local pour piloter les missions Kroma, les relances, les deadlines et les imports mail.
-Il tourne avec un serveur Node, une interface web et un stockage dans `data/crm.json`.
+CRM local pour piloter les missions Kroma / Mind'Com : pipeline, agenda, revenus, dossiers clients et un agent **Jarvis** qui exécute de vraies automations (pas juste du chat).
+
+Refonte complète : nouvelle architecture serveur, nouveau design (hybride street x minimaliste), et un moteur d'automations qui fonctionne **même sans clé OpenAI**.
 
 ## Lancer
 
-Double-cliquer sur :
-
-```text
-start-crm.bat
-```
-
-Ou lancer en ligne de commande :
+Double-clique sur `start-crm.bat`, ou en ligne de commande :
 
 ```powershell
 npm start
 ```
 
-Puis ouvrir :
+Puis ouvre : http://localhost:3000
 
-```text
-http://localhost:3000
-```
+## Jarvis & automations
 
-## Jarvis ChatGPT local
+Jarvis fonctionne en deux couches :
 
-Le CRM expose un endpoint local `/api/jarvis/chat` base sur l'API OpenAI Responses.
-Pour activer le vrai mode ChatGPT, lancer le serveur avec une cle :
+1. **Moteur local (toujours actif, sans clé API)** — comprend des commandes précises et agit réellement sur tes données :
+   - `nouvelle mission <nom> pour <société>` → crée la mission
+   - `relance <mission>` → passe la mission en "à relancer" et sort un message prêt à copier
+   - `termine <mission>` → clôture la mission (stage "fait")
+   - `bloque <mission>` → marque la mission bloquée
+   - `snooze <mission> 3 jours` → décale l'échéance
+   - `cherche <terme>` → recherche dans les missions
+   - `digest` → génère un résumé de semaine (retards, échéances à venir, pipeline) et l'archive dans la base mail
+   - `stats` → chiffre d'affaires en pipeline / facturé
+
+   Chaque action est journalisée dans le panneau **Automations récentes** du dashboard et l'onglet **Jarvis**.
+
+2. **Mode ChatGPT (optionnel)** — si le message ne correspond à aucune commande, et qu'une clé OpenAI est configurée, Jarvis répond librement avec le contexte CRM complet (missions, stats, tâches mail importées).
+
+Pour activer le vrai mode ChatGPT :
 
 ```powershell
 $env:OPENAI_API_KEY="sk-..."
@@ -34,34 +40,38 @@ $env:OPENAI_MODEL="gpt-5.5"
 npm start
 ```
 
-Ou double-cliquer sur `setup-openai-key.bat` : le script cree un fichier `.env` local ignore par Git, enregistre la cle pour Windows et redemarre le serveur.
+Ou double-clique sur `setup-openai-key.bat` (crée un `.env` local, ignoré par Git).
 
-Sans `OPENAI_API_KEY`, Jarvis reste en mode CRM local et explique quoi configurer.
-Le site ne reutilise pas les cookies ou la session Google du navigateur : Gmail/Agenda live devront passer par une connexion OAuth Google explicite.
+Sans clé, Jarvis reste 100% fonctionnel pour les automations ci-dessus, avec un message d'aide au lieu du chat libre.
 
-## Fonctionnalites
+## Import mail
 
-- Suivis clients, tournages, montages, deadlines et relances.
-- Pipeline : a clarifier, a relancer, en cours, bloque, fait.
-- Recherche et filtres par relances ou suivis faits.
-- Indicateurs : enjeu suivi, relances semaine, avancement, sujets actifs.
-- Ajout, modification et suppression de suivis.
-- Messages de relance prets a copier.
-- Notes horodatees par suivi.
-- Donnees persistantes en local dans `data/crm.json`.
-- Base mail optionnelle via `data/viral-mail-db.json`.
-- Profil utilisateur personnalisable via `data/user-session.json`.
-- Idea Studio : generation d'angles creatifs relies aux missions, brief Canva pret a copier et ouverture du bon format Canva.
-- Spotify focus : collage d'un lien Spotify pour afficher un lecteur embarque, plus recherches de mood rapides.
-- Jarvis ChatGPT-ready via le serveur local, avec contexte CRM, profil Kroma et base mail importee.
+```powershell
+npm run import-mail -- --payload chemin/vers/payload.json
+```
 
-## GitHub Pages
+Le script `scripts/viral-mail-importer.js` transforme un export de mails (tâches, tournages, contacts) en missions CRM, en dédupliquant par identifiant de message.
 
-Le projet est pret pour GitHub Pages avec le workflow `.github/workflows/pages.yml`.
-Le site public sert le dossier `public`.
+## Fonctionnalités
 
-Important : GitHub Pages ne lance pas le serveur Node. En ligne, le CRM passe donc en mode demo/localStorage :
+- **Radar (dashboard)** : métriques clés, priorités du jour, échéances à venir, journal des automations, répartition du pipeline.
+- **Missions (pipeline)** : board par étape (à clarifier → à relancer → en cours → bloqué → fait).
+- **Agenda** : toutes les missions actives triées par échéance, retards mis en évidence.
+- **Dossiers (contacts)** : recherche par nom/société, fiche détaillée.
+- **Revenus** : pipeline actif, montant facturé, répartition par étape et par mois.
+- **Jarvis** : chat + commandes automatisées + journal d'activité.
+- **Profil** : nom, rôle, nom du workspace, tagline, semaine active.
+- Stockage local dans `data/*.json` (créé automatiquement au premier lancement, données de démo pré-remplies).
 
-- donnees publiques de demo dans `public/data/contacts.json` ;
-- ajouts/modifications sauvegardes dans le navigateur du visiteur ;
-- vraies donnees locales conservees dans `data/*.json`, non exposees par Pages.
+## Structure
+
+```
+server.js              serveur HTTP natif (aucune dépendance), API + fichiers statiques
+public/                 front (index.html, styles.css, app.js)
+scripts/                import de mails
+data/                   stockage JSON local (ignoré par Git)
+```
+
+## Limite connue
+
+L'app nécessite le serveur Node pour fonctionner (API `/api/*`). Le workflow GitHub Pages fourni déploie le dossier `public`, mais sans serveur Node actif les appels API échoueront en ligne — GitHub Pages n'est donc pas adapté tel quel pour cette version. Utilisation prévue : local, ou hébergement Node (Render, Railway, VPS...).
