@@ -702,6 +702,13 @@ async function staticFallback(path, options = {}) {
     return { session };
   }
   if (method === "GET" && path === "/api/mail-database") return readStaticMailDb();
+  if (method === "POST" && path === "/api/jarvis/chat") {
+    return {
+      configured: false,
+      model: "demo",
+      reply: "Jarvis IA est en mode demo sur GitHub Pages. Lance le serveur local avec OPENAI_API_KEY pour connecter ChatGPT. Pour Google live, il faudra une connexion OAuth explicite; je peux deja exploiter la base mail importee."
+    };
+  }
   throw new Error("Action hors radar.");
 }
 
@@ -1329,11 +1336,25 @@ function renderJarvis() {
     <button type="button" data-agent-command="relances">Signaux ${due.length}</button>
     <button type="button" data-agent-command="agenda">Tempo</button>
     <button type="button" data-agent-command="idees">Idees</button>
+    <button type="button" data-agent-command="fais-moi un plan d'action priorise pour aujourd'hui">ChatGPT</button>
+    <button type="button" data-agent-command="connecte google et explique ce qui manque">Google</button>
     <button type="button" data-agent-command="${focus ? `cherche ${escapeHtml(focus.name)}` : "focus"}">Focus</button>
   `;
 }
 
-function jarvisReply(raw) {
+function isLocalJarvisCommand(raw) {
+  const normalized = normalizeCommand(raw);
+  const localKeywords = [
+    "aide", "help", "nouveau", "nouvelle", "agenda", "deadline", "tempo",
+    "idee", "canva", "spotify", "creative", "pipeline", "mission", "contact",
+    "crm", "dossier", "base", "mail", "gmail", "profil", "profile", "session",
+    "relance", "signal", "focus", "brief", "scan", "da", "brand", "design"
+  ];
+  return localKeywords.some((keyword) => normalized.includes(keyword))
+    || /^(cherche|recherche|trouve|ouvre)\b/.test(normalized);
+}
+
+async function jarvisReply(raw) {
   const command = String(raw || "").trim();
   if (!command) {
     pushJarvisMessage("agent", "Dis-moi: scan, relances, tempo, idees, Canva, Spotify, base mail, profil, cherche un dossier, ou nouvelle mission.");
@@ -1343,9 +1364,27 @@ function jarvisReply(raw) {
   pushJarvisMessage("user", command);
   els.jarvisMode.textContent = "Analyse";
 
-  window.setTimeout(() => {
-    processJarvisCommand(command);
-  }, 180);
+  if (isLocalJarvisCommand(command)) {
+    window.setTimeout(() => {
+      processJarvisCommand(command);
+    }, 160);
+    return;
+  }
+
+  try {
+    const response = await api("/api/jarvis/chat", {
+      method: "POST",
+      body: JSON.stringify({
+        message: command,
+        history: state.agentMessages.slice(-8)
+      })
+    });
+    pushJarvisMessage("agent", response.reply);
+    els.jarvisMode.textContent = response.configured ? "ChatGPT" : "Setup";
+  } catch (error) {
+    pushJarvisMessage("agent", `Connexion IA impossible: ${error.message}. Je reste en mode local: scan, relances, tempo, base mail, dossiers.`);
+    els.jarvisMode.textContent = "Local";
+  }
 }
 
 function processJarvisCommand(raw) {

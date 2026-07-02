@@ -23,6 +23,20 @@ Puis ouvrir :
 http://localhost:3000
 ```
 
+## Jarvis ChatGPT local
+
+Le CRM expose un endpoint local `/api/jarvis/chat` base sur l'API OpenAI Responses.
+Pour activer le vrai mode ChatGPT, lancer le serveur avec une cle :
+
+```powershell
+$env:OPENAI_API_KEY="sk-..."
+$env:OPENAI_MODEL="gpt-5.5"
+npm start
+```
+
+Sans `OPENAI_API_KEY`, Jarvis reste en mode CRM local et explique quoi configurer.
+Le site ne reutilise pas les cookies ou la session Google du navigateur : Gmail/Agenda live devront passer par une connexion OAuth Google explicite.
+
 ## Fonctionnalites
 
 - Suivis clients, tournages, montages, deadlines et relances.
@@ -37,6 +51,7 @@ http://localhost:3000
 - Profil utilisateur personnalisable via `data/user-session.json`.
 - Idea Studio : generation d'angles creatifs relies aux missions, brief Canva pret a copier et ouverture du bon format Canva.
 - Spotify focus : collage d'un lien Spotify pour afficher un lecteur embarque, plus recherches de mood rapides.
+- Jarvis ChatGPT-ready via le serveur local, avec contexte CRM, profil Kroma et base mail importee.
 
 ## GitHub Pages
 
