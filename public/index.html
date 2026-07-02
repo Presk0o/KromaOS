@@ -1,451 +1,226 @@
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kroma HQ</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand">
-          <img src="assets/kroma-logo.png" alt="Kroma" class="brand-logo">
-          <div>
-            <strong id="brandName">Kroma HQ</strong>
-            <span id="brandTagline">Street-Verse ops</span>
-          </div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kroma HQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="assets/kroma-logo.png" alt="Kroma" class="brand-logo">
+        <div class="brand-text">
+          <strong id="brandName">Kroma HQ</strong>
+          <span id="brandTagline">Street x minimal ops</span>
         </div>
+      </div>
 
-        <nav class="nav-list" aria-label="Navigation principale">
-          <button class="nav-item active" type="button" data-route="dashboard">
-            <span>HQ</span>
-            <strong id="navTotal">0</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="pipeline">
-            <span>Missions</span>
-            <strong id="navActive">0</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="agenda">
-            <span>Tempo</span>
-            <strong id="navDue">0</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="contacts">
-            <span>Dossiers</span>
-            <strong id="navDone">0</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="database">
-            <span>Base mail</span>
-            <strong id="navMail">0</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="ideas">
-            <span>Idees</span>
-            <strong id="navIdeas">0</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="assistant">
-            <span>Agent</span>
-            <strong>AI</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="brand">
-            <span>DA</span>
-            <strong>FX</strong>
-          </button>
-          <button class="nav-item" type="button" data-route="profile">
-            <span>Profil</span>
-            <strong id="navProfile">MD</strong>
-          </button>
-        </nav>
+      <nav class="nav-list" aria-label="Navigation principale">
+        <button class="nav-item active" type="button" data-route="dashboard">
+          <span class="nav-dot" data-icon="radar"></span><span>Radar</span><strong id="navTotal">0</strong>
+        </button>
+        <button class="nav-item" type="button" data-route="pipeline">
+          <span class="nav-dot" data-icon="pipeline"></span><span>Missions</span><strong id="navActive">0</strong>
+        </button>
+        <button class="nav-item" type="button" data-route="agenda">
+          <span class="nav-dot" data-icon="agenda"></span><span>Agenda</span><strong id="navDue">0</strong>
+        </button>
+        <button class="nav-item" type="button" data-route="contacts">
+          <span class="nav-dot" data-icon="contacts"></span><span>Dossiers</span><strong id="navDone">0</strong>
+        </button>
+        <button class="nav-item" type="button" data-route="revenue">
+          <span class="nav-dot" data-icon="revenue"></span><span>Revenus</span><strong id="navRevenue">-</strong>
+        </button>
+        <button class="nav-item" type="button" data-route="jarvis">
+          <span class="nav-dot" data-icon="jarvis"></span><span>Jarvis</span><strong class="pill">AI</strong>
+        </button>
+        <button class="nav-item" type="button" data-route="profile">
+          <span class="nav-dot" data-icon="profile"></span><span>Profil</span><strong id="navProfile">MD</strong>
+        </button>
+      </nav>
 
-        <div class="sidebar-status">
-          <span>Arc actif</span>
-          <strong id="weekLabel">29 juin - 5 juillet</strong>
+      <div class="sidebar-status">
+        <span>Arc actif</span>
+        <strong id="weekLabel">Semaine active</strong>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="routeKicker">Command center</p>
+          <h1 id="routeTitle">Radar Kroma</h1>
         </div>
-      </aside>
-
-      <main class="workspace">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow" id="routeKicker">Command center</p>
-            <h1 id="routeTitle">Radar Kroma</h1>
-          </div>
-          <div class="topbar-actions">
-            <button class="ghost-button" type="button" data-command="idees">Idees</button>
-            <button class="ghost-button" type="button" data-command="agenda">Tempo</button>
-            <button class="primary-button" type="button" id="quickAddBtn">Nouvelle mission</button>
-          </div>
-        </header>
-
-        <section class="command-center" aria-label="Console Jarvis">
-          <div class="system-mark" aria-hidden="true"></div>
-          <form class="command-form" id="commandForm">
-            <label for="commandInput" id="commandLabel">Console Jarvis</label>
-            <div class="command-row">
-              <input id="commandInput" autocomplete="off" placeholder="scan, relances, tempo, cherche client, nouvelle mission...">
-              <button class="primary-button" type="submit">Lancer</button>
-            </div>
-          </form>
-          <output class="command-output" id="commandOutput">Radar prêt. Missions chargées.</output>
-        </section>
-
-        <section class="view active" data-view="dashboard">
-          <div class="metric-grid" id="metricGrid"></div>
-          <div class="dashboard-layout">
-            <article class="panel focus-panel" id="focusPanel"></article>
-            <article class="panel next-panel" id="nextPanel"></article>
-            <article class="panel brief-panel" id="briefPanel"></article>
-            <article class="panel creative-panel" id="creativePanel"></article>
-          </div>
-        </section>
-
-        <section class="view" data-view="pipeline">
-          <div class="section-header">
-            <div>
-              <p class="eyebrow">Flux missions</p>
-              <h2>Board street</h2>
-            </div>
-            <button class="primary-button" type="button" id="pipelineAddBtn">Nouvelle mission</button>
-          </div>
-          <div class="pipeline-board" id="pipelineBoard"></div>
-        </section>
-
-        <section class="view" data-view="agenda">
-          <div class="section-header">
-            <div>
-              <p class="eyebrow">Tempo</p>
-              <h2>Agenda des impacts</h2>
-            </div>
-            <div class="section-summary" id="agendaSummary">Chargement...</div>
-          </div>
-          <div class="agenda-grid" id="agendaGrid"></div>
-        </section>
-
-        <section class="view" data-view="contacts">
-          <div class="contacts-tools">
-            <label class="search-field">
-              <span>Scanner</span>
-              <input id="searchInput" type="search" placeholder="Client, studio, tournage, montage...">
-            </label>
-            <div class="stage-tabs" id="stageTabs"></div>
-          </div>
-          <div class="contacts-layout">
-            <section class="panel contact-list-panel">
-              <div class="list-header">
-                <div>
-                  <p class="eyebrow">Dossiers</p>
-                  <h2 id="listTitle">Tous les dossiers</h2>
-                </div>
-                <button class="primary-button compact" type="button" id="contactAddBtn">Créer</button>
-              </div>
-              <div class="contact-list" id="contactList"></div>
-            </section>
-            <aside class="panel detail-panel" id="detailPanel"></aside>
-          </div>
-        </section>
-
-        <section class="view" data-view="database">
-          <div class="section-header">
-            <div>
-              <p class="eyebrow">Automation mail</p>
-              <h2>Base missions</h2>
-            </div>
-            <div class="section-summary" id="mailDbSummary">Chargement...</div>
-          </div>
-          <div class="maildb-grid">
-            <article class="panel maildb-panel" id="mailDbImports"></article>
-            <article class="panel maildb-panel" id="mailDbShoots"></article>
-            <article class="panel maildb-panel" id="mailDbTasks"></article>
-          </div>
-        </section>
-
-        <section class="view" data-view="ideas">
-          <div class="section-header">
-            <div>
-              <p class="eyebrow">Canva engine</p>
-              <h2>Idea Studio</h2>
-            </div>
-            <div class="section-summary" id="ideaSummary">Pret a generer.</div>
-          </div>
-
-          <div class="idea-layout">
-            <article class="panel idea-control-panel">
-              <p class="eyebrow">Brief builder</p>
-              <h2>Generateur d'idees</h2>
-              <form class="idea-form" id="ideaForm">
-                <label>Mission<select id="ideaMissionInput"></select></label>
-                <label>Format<select id="ideaFormatInput">
-                  <option value="instagram_post">Post Instagram</option>
-                  <option value="your_story">Story / Reel</option>
-                  <option value="flyer">Flyer street</option>
-                  <option value="poster">Poster</option>
-                  <option value="youtube_thumbnail">Miniature YouTube</option>
-                  <option value="pinterest_pin">Pin Pinterest</option>
-                </select></label>
-                <label>Angle<select id="ideaAngleInput">
-                  <option value="street_launch">Lancement street</option>
-                  <option value="behind_scene">Backstage tournage</option>
-                  <option value="social_proof">Preuve sociale</option>
-                  <option value="recruitment">Recrutement crew</option>
-                  <option value="offer">Offre commerciale</option>
-                  <option value="event">Event / rendez-vous</option>
-                </select></label>
-                <label class="wide-field">Objectif<textarea id="ideaGoalInput" rows="4" placeholder="Ex: vendre une offre montage, annoncer un tournage, relancer un client..."></textarea></label>
-                <div class="dialog-actions">
-                  <button class="ghost-button" type="button" id="ideaCopyBtn">Copier brief</button>
-                  <button class="ghost-button" type="button" id="ideaCanvaBtn">Ouvrir Canva</button>
-                  <button class="primary-button" type="submit">Generer</button>
-                </div>
-              </form>
-            </article>
-
-            <article class="panel idea-brief-panel">
-              <p class="eyebrow">Prompt Canva</p>
-              <h2>Brief pret a coller</h2>
-              <pre id="ideaBrief">Choisis une mission puis genere une idee.</pre>
-            </article>
-
-            <article class="panel spotify-panel">
-              <div class="panel-header">
-                <div>
-                  <p class="eyebrow">Focus audio</p>
-                  <h2>Spotify layer</h2>
-                </div>
-                <button class="ghost-button compact" type="button" id="spotifyOpenBtn">Ouvrir</button>
-              </div>
-              <label class="spotify-url-field">Lien Spotify<input id="spotifyUrlInput" placeholder="Playlist, album ou track Spotify"></label>
-              <div class="spotify-actions" id="spotifyMoodButtons">
-                <button type="button" data-spotify-search="Miles Morales Spider Verse soundtrack">Spider-Verse</button>
-                <button type="button" data-spotify-search="dark trap instrumental focus">Dark focus</button>
-                <button type="button" data-spotify-search="creative flow hip hop instrumental">Creative flow</button>
-              </div>
-              <div class="spotify-embed" id="spotifyEmbed"></div>
-            </article>
-
-            <section class="idea-output" id="ideaOutput"></section>
-          </div>
-        </section>
-
-        <section class="view" data-view="assistant">
-          <div class="assistant-grid">
-            <article class="panel assistant-panel">
-              <p class="eyebrow">Jarvis layer</p>
-              <h2>Scan instantané</h2>
-              <div class="assistant-brief" id="assistantBrief"></div>
-              <div class="quick-commands">
-                <button type="button" data-command="brief">Brief</button>
-                <button type="button" data-command="relances">Signaux</button>
-                <button type="button" data-command="focus">Focus</button>
-                <button type="button" data-command="agenda">Tempo</button>
-                <button type="button" data-command="idees">Idees</button>
-              </div>
-            </article>
-            <article class="panel assistant-panel">
-              <p class="eyebrow">Exécution</p>
-              <h2>Next move</h2>
-              <div id="assistantNext"></div>
-            </article>
-          </div>
-        </section>
-
-        <section class="view" data-view="brand">
-          <div class="brand-lab">
-            <article class="panel logo-card">
-              <img src="assets/kroma-logo.png" alt="Kroma">
-            </article>
-            <article class="panel brand-card">
-              <p class="eyebrow">DA</p>
-              <h2>Kroma Street-Verse</h2>
-              <div class="palette">
-                <span style="--swatch:#050508">Noir</span>
-                <span style="--swatch:#7a2cff">Violet</span>
-                <span style="--swatch:#ff1744">Rouge</span>
-                <span style="--swatch:#00f7ff">Cyan</span>
-                <span style="--swatch:#ff2bd6">Magenta</span>
-                <span style="--swatch:#f4d35e">Impact</span>
-              </div>
-              <div class="visual-rules">
-                <strong>Comic print, graffiti, multivers.</strong>
-                <p>Contours sticker, trame halftone, glitch rouge/cyan, ville nocturne et énergie street sans perdre la lecture.</p>
-              </div>
-              <div class="verse-tags">
-                <span>Halftone</span>
-                <span>Sticker</span>
-                <span>Glitch</span>
-                <span>Neon city</span>
-              </div>
-            </article>
-            <article class="panel texture-card">
-              <span>HALFTONE</span>
-              <span>GLITCH</span>
-              <span>IMPACT</span>
-            </article>
-          </div>
-        </section>
-
-        <section class="view" data-view="profile">
-          <div class="profile-grid">
-            <article class="panel profile-card" id="profilePreview"></article>
-            <article class="panel profile-settings">
-              <p class="eyebrow">Session utilisateur</p>
-              <h2>Personnalisation maximale</h2>
-              <form class="settings-form" id="profileForm">
-                <label>Nom<input id="profileNameInput" required></label>
-                <label>Handle<input id="profileHandleInput"></label>
-                <label>Rôle<input id="profileRoleInput"></label>
-                <label>Email<input id="profileEmailInput" type="email"></label>
-                <label>Initiales<input id="profileAvatarInput" maxlength="3"></label>
-                <label>Photo de profil<input id="profilePhotoInput" type="file" accept="image/*"></label>
-                <label>Nom du HQ<input id="workspaceNameInput"></label>
-                <label>Tagline<input id="workspaceTaglineInput"></label>
-                <label>Arc semaine<input id="workspaceWeekInput"></label>
-                <label>Pilote par défaut<input id="defaultOwnerInput"></label>
-                <label>Page de départ<select id="startRouteInput">
-                  <option value="dashboard">Radar</option>
-                  <option value="pipeline">Missions</option>
-                  <option value="agenda">Tempo</option>
-                  <option value="contacts">Dossiers</option>
-                  <option value="database">Base mail</option>
-                  <option value="ideas">Idees</option>
-                  <option value="assistant">Agent</option>
-                  <option value="brand">DA</option>
-                  <option value="profile">Profil</option>
-                </select></label>
-                <label>Densité<select id="densityInput">
-                  <option value="compact">Compact</option>
-                  <option value="comfortable">Confort</option>
-                  <option value="spacious">Spacieux</option>
-                </select></label>
-                <label>Mouvement<select id="motionInput">
-                  <option value="on">Animations ON</option>
-                  <option value="reduced">Réduit</option>
-                </select></label>
-                <label>Intensité visuelle<input id="visualIntensityInput" type="range" min="20" max="100"></label>
-                <label>Violet<input id="accentColorInput" type="color"></label>
-                <label>Rouge<input id="hotColorInput" type="color"></label>
-                <label>Cyan<input id="cyanColorInput" type="color"></label>
-                <label>Magenta<input id="magentaColorInput" type="color"></label>
-                <label class="wide-field">Bio<textarea id="profileBioInput" rows="4"></textarea></label>
-                <label class="toggle-field"><input id="jarvisDefaultOpenInput" type="checkbox"> Ouvrir Jarvis par défaut</label>
-                <div class="preset-row">
-                  <button type="button" data-profile-preset="street">Preset Street-Verse</button>
-                  <button type="button" data-profile-preset="stealth">Preset Stealth</button>
-                  <button type="button" data-profile-preset="impact">Preset Impact</button>
-                </div>
-                <div class="dialog-actions">
-                  <button class="ghost-button" type="button" id="profileResetBtn">Recharger</button>
-                  <button class="primary-button" type="submit">Sauver session</button>
-                </div>
-              </form>
-            </article>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <section class="jarvis-shell" id="jarvisShell" aria-label="Mini Jarvis">
-      <button class="jarvis-orb" id="jarvisToggle" type="button" aria-expanded="false" aria-controls="jarvisPanel">
-        <span class="orb-ring ring-one" aria-hidden="true"></span>
-        <span class="orb-ring ring-two" aria-hidden="true"></span>
-        <span class="orb-core" aria-hidden="true">
-          <span class="orb-eye"></span>
-        </span>
-        <span class="orb-label">Jarvis</span>
-        <span class="orb-count" id="jarvisCount">0</span>
-      </button>
-
-      <aside class="jarvis-panel" id="jarvisPanel" aria-live="polite">
-        <div class="jarvis-header">
-          <div>
-              <p class="eyebrow">Agent tactique</p>
-            <h2>Kroma Jarvis</h2>
-          </div>
-          <div class="jarvis-status">
-            <span></span>
-            <strong id="jarvisMode">Online</strong>
-          </div>
+        <div class="topbar-actions">
+          <button class="ghost-button" type="button" data-command="digest">Digest semaine</button>
+          <button class="primary-button" type="button" id="quickAddBtn">Nouvelle mission</button>
         </div>
+      </header>
 
-        <div class="jarvis-visual" aria-hidden="true">
-          <div class="jarvis-radar"></div>
-          <div class="jarvis-bars">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
-
-        <div class="jarvis-cortex" id="jarvisCortex">
-          <article>
-            <span>Observe</span>
-            <strong>Missions en attente</strong>
-          </article>
-          <article>
-            <span>Analyse</span>
-            <strong>Priorites</strong>
-          </article>
-          <article>
-            <span>Execute</span>
-            <strong>Commande</strong>
-          </article>
-        </div>
-
-        <div class="jarvis-feed" id="jarvisFeed"></div>
-
-        <div class="jarvis-suggestions" id="jarvisSuggestions">
-          <button type="button" data-agent-command="brief">Brief</button>
-          <button type="button" data-agent-command="relances">Signaux</button>
-          <button type="button" data-agent-command="agenda">Tempo</button>
-          <button type="button" data-agent-command="idees">Idees</button>
-          <button type="button" data-agent-command="plan">Plan</button>
-          <button type="button" data-agent-command="diagnostic">Diagnostic</button>
-          <button type="button" data-agent-command="parle">Voix</button>
-        </div>
-
-        <form class="jarvis-form" id="jarvisForm">
-          <label for="jarvisInput">Commande Jarvis</label>
-          <div>
-            <input id="jarvisInput" autocomplete="off" placeholder="demande un plan, un mail, une priorite, ou ouvre tempo...">
-            <button class="primary-button compact" type="submit">Ping</button>
+      <section class="command-center" aria-label="Console Jarvis">
+        <div class="command-glow" aria-hidden="true"></div>
+        <form class="command-form" id="commandForm">
+          <label for="commandInput" id="commandLabel">Console Jarvis</label>
+          <div class="command-row">
+            <input id="commandInput" autocomplete="off" placeholder="nouvelle mission X pour Y / relance X / digest / stats / cherche X">
+            <button class="primary-button" type="submit">Lancer</button>
           </div>
         </form>
-      </aside>
-    </section>
+        <output class="command-output" id="commandOutput">Radar pret. Missions chargees.</output>
+      </section>
 
-    <dialog id="contactDialog">
-      <form method="dialog" class="dialog-card" id="contactForm">
-        <div class="dialog-header">
-          <div>
-            <p class="eyebrow">Fiche mission</p>
-            <h2 id="dialogTitle">Nouvelle mission</h2>
+      <section class="view active" data-view="dashboard">
+        <div class="metric-grid" id="metricGrid"></div>
+        <div class="dashboard-layout">
+          <article class="panel focus-panel">
+            <h3>Priorite du jour</h3>
+            <div id="focusPanel"></div>
+          </article>
+          <article class="panel next-panel">
+            <h3>A venir</h3>
+            <div id="nextPanel"></div>
+          </article>
+          <article class="panel activity-panel">
+            <h3>Automations recentes</h3>
+            <div id="activityPanel"></div>
+          </article>
+          <article class="panel stage-panel">
+            <h3>Repartition pipeline</h3>
+            <div id="stagePanel"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" data-view="pipeline">
+        <div class="section-header">
+          <div><p class="eyebrow">Flux missions</p><h2>Board Kroma</h2></div>
+          <button class="primary-button" type="button" id="pipelineAddBtn">Nouvelle mission</button>
+        </div>
+        <div class="pipeline-board" id="pipelineBoard"></div>
+      </section>
+
+      <section class="view" data-view="agenda">
+        <div class="section-header">
+          <div><p class="eyebrow">Tempo</p><h2>Agenda des echeances</h2></div>
+          <div class="section-summary" id="agendaSummary">Chargement...</div>
+        </div>
+        <div class="agenda-grid" id="agendaGrid"></div>
+      </section>
+
+      <section class="view" data-view="contacts">
+        <div class="section-header">
+          <div><p class="eyebrow">Dossiers</p><h2>Clients &amp; prospects</h2></div>
+          <input class="search-input" id="contactSearch" type="search" placeholder="Chercher un dossier...">
+        </div>
+        <div class="contacts-list" id="contactsList"></div>
+      </section>
+
+      <section class="view" data-view="revenue">
+        <div class="section-header">
+          <div><p class="eyebrow">Finances</p><h2>Revenus &amp; pipeline</h2></div>
+        </div>
+        <div class="metric-grid" id="revenueMetrics"></div>
+        <article class="panel">
+          <h3>Repartition par stage</h3>
+          <div id="revenueByStage"></div>
+        </article>
+        <article class="panel">
+          <h3>Par mois</h3>
+          <div id="revenueByMonth"></div>
+        </article>
+      </section>
+
+      <section class="view" data-view="jarvis">
+        <div class="section-header">
+          <div><p class="eyebrow">Agent</p><h2>Jarvis &amp; automations</h2></div>
+          <span class="status-pill" id="jarvisStatusPill">...</span>
+        </div>
+        <div class="jarvis-layout">
+          <article class="panel jarvis-chat">
+            <div class="chat-log" id="chatLog"></div>
+            <form class="chat-form" id="chatForm">
+              <input id="chatInput" autocomplete="off" placeholder="Demande a Jarvis...">
+              <button class="primary-button" type="submit">Envoyer</button>
+            </form>
+          </article>
+          <article class="panel jarvis-commands">
+            <h3>Commandes automatisees</h3>
+            <ul class="command-list">
+              <li><code>nouvelle mission &lt;nom&gt; pour &lt;societe&gt;</code></li>
+              <li><code>relance &lt;mission&gt;</code></li>
+              <li><code>termine &lt;mission&gt;</code></li>
+              <li><code>bloque &lt;mission&gt;</code></li>
+              <li><code>snooze &lt;mission&gt; 3 jours</code></li>
+              <li><code>cherche &lt;terme&gt;</code></li>
+              <li><code>digest</code> / <code>stats</code></li>
+            </ul>
+            <h3>Journal d'activite</h3>
+            <div id="jarvisActivity"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" data-view="profile">
+        <div class="section-header">
+          <div><p class="eyebrow">Profil</p><h2>Reglages workspace</h2></div>
+        </div>
+        <form class="profile-form" id="profileForm">
+          <div class="field-grid">
+            <label>Nom<input name="profile.name" id="profileName"></label>
+            <label>Role<input name="profile.role" id="profileRole"></label>
+            <label>Email<input name="profile.email" id="profileEmail"></label>
+            <label>Nom workspace<input name="workspace.name" id="workspaceName"></label>
+            <label>Tagline<input name="workspace.tagline" id="workspaceTagline"></label>
+            <label>Label semaine<input name="workspace.weekLabel" id="workspaceWeek"></label>
           </div>
-          <button class="icon-button" type="button" id="closeDialogBtn" aria-label="Fermer">x</button>
-        </div>
+          <button class="primary-button" type="submit">Enregistrer</button>
+        </form>
+      </section>
 
-        <input type="hidden" id="contactId">
+    </main>
+  </div>
 
-        <div class="form-grid">
-          <label>Mission<input id="nameInput" required></label>
-          <label>Crew / client<input id="companyInput" required></label>
-          <label>Email<input id="emailInput" type="email"></label>
-          <label>Telephone<input id="phoneInput"></label>
-          <label>Statut<select id="stageInput"></select></label>
-          <label>Impact estimé<input id="valueInput" type="number" min="0" step="50"></label>
-          <label>Next move<input id="nextActionInput"></label>
-          <label>Deadline<input id="nextActionDateInput" type="date"></label>
-          <label>Pilote<input id="ownerInput"></label>
-          <label>Source<input id="sourceInput"></label>
-          <label>Type de mission<input id="projectTypeInput"></label>
-          <label>Risque / friction<input id="sensitivityInput"></label>
-          <label class="wide-field">Message prêt<textarea id="messageDraftInput" rows="5"></textarea></label>
-        </div>
-
-        <div class="dialog-actions">
-          <button class="ghost-button" type="button" id="cancelDialogBtn">Annuler</button>
-          <button class="primary-button" type="submit">Verrouiller</button>
+  <div class="modal" id="missionModal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modalTitle">Nouvelle mission</h3>
+        <button class="icon-button" type="button" id="modalClose">&times;</button>
+      </div>
+      <form id="missionForm" class="field-grid">
+        <input type="hidden" name="id">
+        <label>Nom<input name="name" required></label>
+        <label>Societe<input name="company"></label>
+        <label>Email<input name="email" type="email"></label>
+        <label>Telephone<input name="phone"></label>
+        <label>Type projet<input name="projectType"></label>
+        <label>Owner<input name="owner"></label>
+        <label>Stage
+          <select name="stage">
+            <option value="clarifier">A clarifier</option>
+            <option value="relancer">A relancer</option>
+            <option value="en_cours">En cours</option>
+            <option value="bloque">Bloque</option>
+            <option value="fait">Fait</option>
+          </select>
+        </label>
+        <label>Valeur (EUR)<input name="value" type="number" min="0" step="50"></label>
+        <label>Echeance<input name="nextActionDate" type="date"></label>
+        <label class="span-2">Prochaine action<textarea name="nextAction" rows="2"></textarea></label>
+        <label class="span-2">Message pret a copier<textarea name="messageDraft" rows="3"></textarea></label>
+        <label class="span-2">Contexte / sensibilite<textarea name="sensitivity" rows="2"></textarea></label>
+        <div class="span-2 modal-actions">
+          <button type="button" class="ghost-button" id="modalDelete" hidden>Supprimer</button>
+          <button type="submit" class="primary-button">Enregistrer</button>
         </div>
       </form>
-    </dialog>
+    </div>
+  </div>
 
-    <script src="app.js"></script>
-  </body>
+  <script src="app.js"></script>
+</body>
 </html>
