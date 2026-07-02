@@ -1,10 +1,13 @@
 const http = require("http");
+const fsSync = require("fs");
 const fs = require("fs/promises");
 const path = require("path");
 const crypto = require("crypto");
 
-const PORT = Number(process.env.PORT || 3000);
 const ROOT = __dirname;
+loadEnvFile(path.join(ROOT, ".env"));
+
+const PORT = Number(process.env.PORT || 3000);
 const PUBLIC_DIR = path.join(ROOT, "public");
 const DATA_DIR = path.join(ROOT, "data");
 const DATA_FILE = path.join(DATA_DIR, "crm.json");
@@ -14,6 +17,23 @@ const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.5";
 const JARVIS_SETUP_MESSAGE = "Mode IA non connecte. Ajoute OPENAI_API_KEY au serveur local et je passe en vrai Jarvis ChatGPT. Pour Google live, il faudra une connexion OAuth explicite; je ne lis pas la session Google du navigateur.";
 
 const stages = ["clarifier", "relancer", "en_cours", "bloque", "fait"];
+
+function loadEnvFile(filePath) {
+  if (!fsSync.existsSync(filePath)) return;
+  const lines = fsSync.readFileSync(filePath, "utf8").split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (!match) continue;
+    const key = match[1];
+    let value = match[2].trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
 
 const demoContacts = [
   {

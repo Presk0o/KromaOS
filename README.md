@@ -34,6 +34,8 @@ $env:OPENAI_MODEL="gpt-5.5"
 npm start
 ```
 
+Ou double-cliquer sur `setup-openai-key.bat` : le script cree un fichier `.env` local ignore par Git, enregistre la cle pour Windows et redemarre le serveur.
+
 Sans `OPENAI_API_KEY`, Jarvis reste en mode CRM local et explique quoi configurer.
 Le site ne reutilise pas les cookies ou la session Google du navigateur : Gmail/Agenda live devront passer par une connexion OAuth Google explicite.
 
