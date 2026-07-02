@@ -11,6 +11,7 @@ const DATA_FILE = path.join(DATA_DIR, "crm.json");
 const MAIL_DB_FILE = path.join(DATA_DIR, "viral-mail-db.json");
 const SESSION_FILE = path.join(DATA_DIR, "user-session.json");
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.5";
+const JARVIS_SETUP_MESSAGE = "Mode IA non connecte. Ajoute OPENAI_API_KEY au serveur local et je passe en vrai Jarvis ChatGPT. Pour Google live, il faudra une connexion OAuth explicite; je ne lis pas la session Google du navigateur.";
 
 const stages = ["clarifier", "relancer", "en_cours", "bloque", "fait"];
 
@@ -394,7 +395,7 @@ async function createJarvisResponse({ message, history, contacts, mailDb, sessio
     return {
       configured: false,
       model: OPENAI_MODEL,
-      reply: "Mode IA non connecte. Ajoute OPENAI_API_KEY au serveur local et je passe en vrai Jarvis ChatGPT. Pour Google live, il faudra une connexion OAuth explicite; je ne lis pas la session Google du navigateur."
+      reply: JARVIS_SETUP_MESSAGE
     };
   }
 
@@ -450,6 +451,16 @@ async function handleApi(req, res, url) {
 
   if (req.method === "GET" && url.pathname === "/api/session") {
     sendJson(res, 200, { session: await readSession() });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/jarvis/status") {
+    const configured = Boolean(process.env.OPENAI_API_KEY);
+    sendJson(res, 200, {
+      configured,
+      model: OPENAI_MODEL,
+      message: configured ? "Jarvis ChatGPT connecte." : JARVIS_SETUP_MESSAGE
+    });
     return;
   }
 

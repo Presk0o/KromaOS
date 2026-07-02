@@ -7,6 +7,7 @@ const stageLabels = {
 };
 
 const stageOrder = ["clarifier", "relancer", "en_cours", "bloque", "fait"];
+const jarvisSetupMessage = "Mode IA non connecte. Ajoute OPENAI_API_KEY au serveur local et je passe en vrai Jarvis ChatGPT. Pour Google live, il faudra une connexion OAuth explicite; je ne lis pas la session Google du navigateur.";
 
 const routeMeta = {
   dashboard: ["HQ multivers", "Radar Kroma"],
@@ -52,7 +53,8 @@ const state = {
   stageFilter: "all",
   ideaStudio: null,
   agentOpen: false,
-  agentMessages: []
+  agentMessages: [],
+  jarvisStatus: null
 };
 
 const els = {
@@ -702,11 +704,14 @@ async function staticFallback(path, options = {}) {
     return { session };
   }
   if (method === "GET" && path === "/api/mail-database") return readStaticMailDb();
+  if (method === "GET" && path === "/api/jarvis/status") {
+    return { configured: false, model: "demo", message: jarvisSetupMessage };
+  }
   if (method === "POST" && path === "/api/jarvis/chat") {
     return {
       configured: false,
       model: "demo",
-      reply: "Jarvis IA est en mode demo sur GitHub Pages. Lance le serveur local avec OPENAI_API_KEY pour connecter ChatGPT. Pour Google live, il faudra une connexion OAuth explicite; je peux deja exploiter la base mail importee."
+      reply: jarvisSetupMessage
     };
   }
   throw new Error("Action hors radar.");
@@ -732,14 +737,16 @@ async function api(path, options = {}) {
 }
 
 async function loadContacts() {
-  const [payload, mailDb, sessionPayload] = await Promise.all([
+  const [payload, mailDb, sessionPayload, jarvisStatus] = await Promise.all([
     api("/api/contacts"),
     api("/api/mail-database").catch(() => emptyMailDatabase()),
-    api("/api/session").catch(() => ({ session: defaultSession() }))
+    api("/api/session").catch(() => ({ session: defaultSession() })),
+    api("/api/jarvis/status").catch(() => ({ configured: false, model: "demo", message: jarvisSetupMessage }))
   ]);
   state.contacts = payload.contacts;
   state.mailDb = mailDb;
   state.session = sessionPayload.session || defaultSession();
+  state.jarvisStatus = jarvisStatus;
   state.ideaStudio = readIdeaStudio();
   state.stages = payload.stages || stageOrder;
   if (!state.selectedId && state.contacts.length) state.selectedId = rankedContacts()[0].id;
@@ -1299,12 +1306,16 @@ function initJarvis() {
   if (state.agentMessages.length) return;
   const due = dueContacts();
   const focus = jarvisFocus();
-  state.agentMessages = [{
+  const messages = [{
     role: "agent",
     text: focus
       ? `Radar chargé. Signal prioritaire: ${focus.name}. ${due.length} alerte(s) à surveiller.`
       : "Radar chargé. Aucune mission active détectée."
   }];
+  if (state.jarvisStatus && !state.jarvisStatus.configured) {
+    messages.push({ role: "agent", text: state.jarvisStatus.message || jarvisSetupMessage });
+  }
+  state.agentMessages = messages;
 }
 
 function pushJarvisMessage(role, text) {
